@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Portfolio Intelligence</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+:root{
+  --bg:#06080d;
+  --card:rgba(16,18,25,.72);
+  --border:rgba(255,255,255,.07);
+  --text:#edf1ff;
+  --muted:#6f7894;
+  --green:#b6ff65;
+  --blue:#5b8df8;
+  --orange:#ffb347;
+  --red:#ff5370;
+  --purple:#a78bfa;
+}
+
+body{
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top left, rgba(91,141,248,.14), transparent 35%),
+    radial-gradient(circle at bottom right, rgba(182,255,101,.08), transparent 35%),
+    var(--bg);
+
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  padding:40px 20px;
+}
+
+.container{
+  max-width:1300px;
+  margin:auto;
+}
+
+header{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-end;
+  margin-bottom:28px;
+}
+
+.title h1{
+  font-size:clamp(2rem,5vw,4rem);
+  font-weight:800;
+  letter-spacing:-.06em;
+}
+
+.title h1 span{
+  color:var(--green);
+}
+
+.title p{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:.8rem;
+  font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+}
+
+.badge{
+  padding:8px 14px;
+  border-radius:999px;
+  background:rgba(182,255,101,.12);
+  border:1px solid rgba(182,255,101,.3);
+  color:var(--green);
+  font-size:.7rem;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.panel{
+  background:var(--card);
+  border:1px solid var(--border);
+  backdrop-filter:blur(16px);
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.35),
+    inset 0 1px rgba(255,255,255,.03);
+}
+
+.add-box{
+  padding:22px;
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr auto;
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:8px;
+  font-size:.72rem;
+  color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+  text-transform:uppercase;
+}
+
+.field input,
+.field select{
+  width:100%;
+  background:#0d1017;
+  border:1px solid rgba(255,255,255,.06);
+  color:white;
+  padding:14px;
+  border-radius:14px;
+  outline:none;
+  transition:.25s;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.field input:focus,
+.field select:focus{
+  border-color:var(--blue);
+  box-shadow:0 0 0 4px rgba(91,141,248,.15);
+}
+
+.btn{
+  border:none;
+  cursor:pointer;
+  border-radius:14px;
+  padding:14px 22px;
+  font-weight:700;
+  transition:.25s;
+}
+
+.btn-add{
+  align-self:end;
+  background:var(--green);
+  color:#081008;
+}
+
+.btn-add:hover{
+  transform:translateY(-2px);
+  box-shadow:0 10px 20px rgba(182,255,101,.2);
+}
+
+.metrics{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:18px;
+  margin-bottom:22px;
+}
+
+.metric{
+  padding:24px;
+  position:relative;
+}
+
+.metric::before{
+  content:'';
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
+  height:3px;
+}
+
+.metric.green::before{background:var(--green);}
+.metric.blue::before{background:var(--blue);}
+.metric.orange::before{background:var(--orange);}
+.metric.red::before{background:var(--red);}
+
+.metric .label{
+  color:var(--muted);
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.12em;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.metric .value{
+  margin-top:14px;
+  font-size:2.3rem;
+  font-weight:800;
+  letter-spacing:-.05em;
+}
+
+.metric .sub{
+  margin-top:10px;
+  color:var(--muted);
+  font-size:.85rem;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:420px 1fr;
+  gap:22px;
+}
+
+.card{
+  padding:26px;
+}
+
+.card-title{
+  margin-bottom:22px;
+  font-size:.75rem;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  font-family:'JetBrains Mono',monospace;
+}
+
+#donutWrap{
+  width:280px;
+  height:280px;
+  position:relative;
+  margin:auto;
+}
+
+#donut{
+  width:100%;
+  height:100%;
+}
+
+.center{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+
+.center .score{
+  font-size:3rem;
+  font-weight:800;
+  letter-spacing:-.06em;
+  color:var(--green);
+}
+
+.center .small{
+  margin-top:6px;
+  font-size:.72rem;
+  text-transform:uppercase;
+  letter-spacing:.14em;
+  color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.legend{
+  margin-top:26px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.legend-item{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+}
+
+.legend-name{
+  flex:1;
+}
+
+.legend-val{
+  color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.hhi{
+  margin-top:28px;
+}
+
+.hhi-bar{
+  margin-top:12px;
+  height:12px;
+  border-radius:999px;
+  background:#0e1118;
+  overflow:hidden;
+  position:relative;
+}
+
+.hhi-fill{
+  height:100%;
+  width:0%;
+  transition:1s;
+  background:linear-gradient(
+    90deg,
+    #b6ff65 0%,
+    #ffb347 50%,
+    #ff5370 100%
+  );
+}
+
+.hhi-labels{
+  margin-top:8px;
+  display:flex;
+  justify-content:space-between;
+  font-size:.7rem;
+  color:var(--muted);
+  font-family:'JetBrains Mono',monospace;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.table th{
+  color:var(--muted);
+  text-transform:uppercase;
+  font-size:.68rem;
+  letter-spacing:.1em;
+  text-align:left;
+  padding-bottom:18px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.table td{
+  padding:18px 0;
+  border-top:1px solid rgba(255,255,255,.06);
+}
+
+.asset{
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.asset-name{
+  font-weight:600;
+}
+
+.tag{
+  width:max-content;
+  font-size:.62rem;
+  padding:4px 8px;
+  border-radius:999px;
+  font-family:'JetBrains Mono',monospace;
+}
+
+.bar{
+  width:100%;
+  height:7px;
+  border-radius:999px;
+  background:#0e1118;
+  overflow:hidden;
+}
+
+.bar-fill{
+  height:100%;
+  border-radius:999px;
+}
+
+.delete{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+  background:transparent;
+  border:1px solid rgba(255,255,255,.08);
+  color:var(--muted);
+  cursor:pointer;
+  transition:.25s;
+}
+
+.delete:hover{
+  color:var(--red);
+  border-color:var(--red);
+}
+
+.rec{
+  margin-top:22px;
+  padding:24px;
+  display:flex;
+  gap:18px;
+  align-items:flex-start;
+}
+
+.rec-icon{
+  font-size:2rem;
+}
+
+.rec-text{
+  line-height:1.8;
+  color:#dbe1ff;
+}
+
+.rec-text strong{
+  color:var(--green);
+}
+
+.empty{
+  padding:50px;
+  text-align:center;
+  color:var(--muted);
+}
+
+@media(max-width:1100px){
+  .grid{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:780px){
+
+  .metrics{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .add-box{
+    grid-template-columns:1fr;
+  }
+}
+
+@media(max-width:500px){
+
+  .metrics{
+    grid-template-columns:1fr;
+  }
+
+  .metric .value{
+    font-size:1.9rem;
+  }
+
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<header>
+  <div class="title">
+    <h1>Portfolio<span>Intelligence</span></h1>
+    <p>Sistema avanzado de diversificación y riesgo</p>
+  </div>
+
+  <div class="badge">
+    LIVE ENGINE v2.0
+  </div>
+</header>
+
+<div class="panel add-box">
+
+  <div class="field">
+    <label>Activo</label>
+    <input id="name" placeholder="AAPL, BTC, NVDA, QQQ..." />
+  </div>
+
+  <div class="field">
+    <label>Categoría</label>
+
+    <select id="category">
+      <option>Acciones</option>
+      <option>ETF</option>
+      <option>Crypto</option>
+      <option>Bonos</option>
+      <option>Cash</option>
+      <option>Materias primas</option>
+      <option>Real Estate</option>
+    </select>
+  </div>
+
+  <div class="field">
+    <label>Valor</label>
+    <input id="value" type="number" placeholder="10000" />
+  </div>
+
+  <button class="btn btn-add" onclick="addAsset()">
+    + Agregar
+  </button>
+
+</div>
+
+<div class="metrics">
+
+  <div class="panel metric green">
+    <div class="label">Portfolio</div>
+    <div class="value" id="mTotal">$0</div>
+    <div class="sub" id="mAssets">0 activos</div>
+  </div>
+
+  <div class="panel metric blue">
+    <div class="label">Diversificación</div>
+    <div class="value" id="mDiversification">0%</div>
+    <div class="sub">score general</div>
+  </div>
+
+  <div class="panel metric orange">
+    <div class="label">Mayor posición</div>
+    <div class="value" id="mTop">—</div>
+    <div class="sub" id="mTopName">—</div>
+  </div>
+
+  <div class="panel metric red">
+    <div class="label">HHI</div>
+    <div class="value" id="mHHI">—</div>
+    <div class="sub" id="mHHILabel">concentración</div>
+  </div>
+
+</div>
+
+<div class="grid">
+
+  <div class="panel card">
+
+    <div class="card-title">
+      Distribución del portafolio
+    </div>
+
+    <div id="donutWrap">
+
+      <canvas id="donut" width="280" height="280"></canvas>
+
+      <div class="center">
+        <div class="score" id="score">0%</div>
+        <div class="small">portfolio health</div>
+      </div>
+
+    </div>
+
+    <div class="legend" id="legend"></div>
+
+    <div class="hhi">
+
+      <div class="card-title">
+        Riesgo de concentración
+      </div>
+
+      <div class="hhi-bar">
+        <div class="hhi-fill" id="hhiFill"></div>
+      </div>
+
+      <div class="hhi-labels">
+        <span>Diversificado</span>
+        <span>Concentrado</span>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="panel card">
+
+    <div class="card-title">
+      Holdings
+    </div>
+
+    <div id="tableWrap"></div>
+
+  </div>
+
+</div>
+
+<div class="panel rec">
+
+  <div class="rec-icon" id="recIcon">📊</div>
+
+  <div class="rec-text" id="recText">
+    Agrega activos para comenzar.
+  </div>
+
+</div>
+
+</div>
+
+<script>
+
+const COLORS = {
+  "Acciones":"#5b8df8",
+  "ETF":"#a78bfa",
+  "Crypto":"#ffb347",
+  "Bonos":"#b6ff65",
+  "Cash":"#7b8199",
+  "Materias primas":"#3dd9c5",
+  "Real Estate":"#ff6fa7"
+};
+
+let assets = JSON.parse(localStorage.getItem("portfolio_assets") || "[]");
+
+function save(){
+  localStorage.setItem(
+    "portfolio_assets",
+    JSON.stringify(assets)
+  );
+}
+
+function fmt(v){
+
+  if(v >= 1000000)
+    return '$' + (v/1000000).toFixed(2) + 'M';
+
+  if(v >= 1000)
+    return '$' + (v/1000).toFixed(1) + 'K';
+
+  return '$' + v.toFixed(0);
+}
+
+function animateNumber(el,start,end,suffix=''){
+
+  let startTime = null;
+
+  function update(t){
+
+    if(!startTime) startTime = t;
+
+    const progress = Math.min((t-startTime)/700,1);
+
+    const val = start + (end-start)*progress;
+
+    el.textContent =
+      typeof end === 'number'
+      ? Math.round(val) + suffix
+      : end;
+
+    if(progress < 1)
+      requestAnimationFrame(update);
+  }
+
+  requestAnimationFrame(update);
+}
+
+function addAsset(){
+
+  const name = document.getElementById('name').value.trim();
+  const category = document.getElementById('category').value;
+  const value = parseFloat(document.getElementById('value').value);
+
+  if(!name || !value || value <= 0) return;
+
+  assets.push({
+    id:Date.now(),
+    name,
+    category,
+    value
+  });
+
+  save();
+
+  document.getElementById('name').value='';
+  document.getElementById('value').value='';
+
+  render();
+}
+
+function removeAsset(id){
+
+  assets = assets.filter(a => a.id !== id);
+
+  save();
+  render();
+}
+
+function render(){
+
+  const tableWrap = document.getElementById('tableWrap');
+
+  if(!assets.length){
+
+    tableWrap.innerHTML = `
+      <div class="empty">
+        Sin posiciones todavía.
+      </div>
+    `;
+
+    drawDonut([]);
+
+    return;
+  }
+
+  const total = assets.reduce((s,a)=>s+a.value,0);
+
+  const enriched = assets.map(a=>({
+    ...a,
+    pct:(a.value/total)*100
+  }))
+  .sort((a,b)=>b.pct-a.pct);
+
+  const categories = {};
+
+  enriched.forEach(a=>{
+    categories[a.category] =
+      (categories[a.category] || 0) + a.pct;
+  });
+
+  const catArr = Object.entries(categories);
+
+  const hhi =
+    enriched.reduce((s,a)=>
+      s + Math.pow(a.pct/100,2)
+    ,0);
+
+  const diversification =
+    Math.round((1-hhi)*100);
+
+  animateNumber(
+    document.getElementById('mTotal'),
+    0,
+    total
+  );
+
+  document.getElementById('mTotal')
+    .textContent = fmt(total);
+
+  document.getElementById('mAssets')
+    .textContent = enriched.length + ' activos';
+
+  document.getElementById('mDiversification')
+    .textContent = diversification + '%';
+
+  document.getElementById('score')
+    .textContent = diversification + '%';
+
+  document.getElementById('mTop')
+    .textContent = enriched[0].pct.toFixed(1) + '%';
+
+  document.getElementById('mTopName')
+    .textContent = enriched[0].name;
+
+  const hhiScore = Math.round(hhi * 10000);
+
+  document.getElementById('mHHI')
+    .textContent = hhiScore;
+
+  document.getElementById('mHHILabel')
+    .textContent =
+      hhiScore < 1500
+      ? 'diversificado'
+      : hhiScore < 2500
+      ? 'moderado'
+      : 'concentrado';
+
+  document.getElementById('hhiFill')
+    .style.width = Math.min(hhi*100,100) + '%';
+
+  drawDonut(catArr);
+
+  renderLegend(catArr);
+
+  tableWrap.innerHTML = `
+    <table class="table">
+
+      <thead>
+        <tr>
+          <th>Activo</th>
+          <th>Valor</th>
+          <th>%</th>
+          <th>Distribución</th>
+          <th></th>
+        </tr>
+      </thead>
+
+      <tbody>
+
+        ${enriched.map(a=>`
+
+          <tr>
+
+            <td>
+
+              <div class="asset">
+
+                <div class="asset-name">
+                  ${a.name}
+                </div>
+
+                <div
+                  class="tag"
+                  style="
+                    background:${COLORS[a.category]}22;
+                    color:${COLORS[a.category]}
+                  "
+                >
+                  ${a.category}
+                </div>
+
+              </div>
+
+            </td>
+
+            <td>
+              ${fmt(a.value)}
+            </td>
+
+            <td style="color:${COLORS[a.category]}">
+              ${a.pct.toFixed(1)}%
+            </td>
+
+            <td style="width:180px">
+
+              <div class="bar">
+
+                <div
+                  class="bar-fill"
+                  style="
+                    width:${a.pct}%;
+                    background:${COLORS[a.category]}
+                  "
+                ></div>
+
+              </div>
+
+            </td>
+
+            <td>
+
+              <button
+                class="delete"
+                onclick="removeAsset(${a.id})"
+              >
+                ✕
+              </button>
+
+            </td>
+
+          </tr>
+
+        `).join('')}
+
+      </tbody>
+
+    </table>
+  `;
+
+  updateRecommendation(
+    hhiScore,
+    enriched[0],
+    catArr.length
+  );
+}
+
+function renderLegend(cats){
+
+  document.getElementById('legend').innerHTML =
+    cats.map(([name,pct])=>`
+
+      <div class="legend-item">
+
+        <div
+          class="dot"
+          style="background:${COLORS[name]}"
+        ></div>
+
+        <div class="legend-name">
+          ${name}
+        </div>
+
+        <div class="legend-val">
+          ${pct.toFixed(1)}%
+        </div>
+
+      </div>
+
+    `).join('');
+}
+
+function drawDonut(cats){
+
+  const canvas =
+    document.getElementById('donut');
+
+  const ctx = canvas.getContext('2d');
+
+  ctx.clearRect(0,0,280,280);
+
+  if(!cats.length){
+
+    ctx.beginPath();
+
+    ctx.arc(140,140,95,0,Math.PI*2);
+
+    ctx.strokeStyle='rgba(255,255,255,.06)';
+    ctx.lineWidth=24;
+    ctx.stroke();
+
+    return;
+  }
+
+  let start = -Math.PI/2;
+
+  cats.forEach(([name,pct])=>{
+
+    const angle =
+      (pct/100)*(Math.PI*2);
+
+    ctx.beginPath();
+
+    ctx.strokeStyle = COLORS[name];
+    ctx.lineWidth = 24;
+    ctx.lineCap = 'round';
+
+    ctx.shadowBlur = 18;
+    ctx.shadowColor = COLORS[name];
+
+    ctx.arc(
+      140,
+      140,
+      95,
+      start,
+      start + angle
+    );
+
+    ctx.stroke();
+
+    start += angle + 0.02;
+  });
+
+}
+
+function updateRecommendation(hhi,top,categories){
+
+  const icon =
+    document.getElementById('recIcon');
+
+  const text =
+    document.getElementById('recText');
+
+  if(hhi > 2500){
+
+    icon.textContent='⚠️';
+
+    text.innerHTML = `
+      Tu portafolio muestra una
+      <strong>concentración elevada</strong>.
+      <strong>${top.name}</strong>
+      representa
+      <strong>${top.pct.toFixed(1)}%</strong>
+      del total.
+      Considera añadir activos con menor correlación para reducir riesgo sistémico.
+    `;
+
+  } else if(hhi > 1500){
+
+    icon.textContent='📈';
+
+    text.innerHTML = `
+      El portafolio tiene una
+      <strong>diversificación moderada</strong>.
+      Ya existe una estructura relativamente saludable entre categorías.
+      Puedes mejorar añadiendo bonos, commodities o cash defensivo.
+    `;
+
+  } else {
+
+    icon.textContent='✅';
+
+    text.innerHTML = `
+      Excelente estructura.
+      El portafolio se encuentra
+      <strong>bien diversificado</strong>
+      entre
+      <strong>${categories} categorías</strong>.
+      Mantén rebalanceos periódicos y evita sobreexposición futura.
+    `;
+  }
+}
+
+document
+.getElementById('value')
+.addEventListener('keydown',e=>{
+  if(e.key==='Enter') addAsset();
+});
+
+render();
+
+</script>
+
+</body>
+</html>
