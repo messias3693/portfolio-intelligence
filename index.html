@@ -295,7 +295,7 @@ header{
 .hhi-fill{
   height:100%;
   width:0%;
-  transition:1s;
+  transition:1s cubic-bezier(0.4, 0, 0.2, 1);
   background:linear-gradient(
     90deg,
     #b6ff65 0%,
@@ -362,6 +362,7 @@ header{
 .bar-fill{
   height:100%;
   border-radius:999px;
+  transition:width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .delete{
@@ -414,26 +415,21 @@ header{
 }
 
 @media(max-width:780px){
-
   .metrics{
     grid-template-columns:1fr 1fr;
   }
-
   .add-box{
     grid-template-columns:1fr;
   }
 }
 
 @media(max-width:500px){
-
   .metrics{
     grid-template-columns:1fr;
   }
-
   .metric .value{
     font-size:1.9rem;
   }
-
 }
 </style>
 </head>
@@ -453,15 +449,13 @@ header{
 </header>
 
 <div class="panel add-box">
-
   <div class="field">
     <label>Activo</label>
-    <input id="name" placeholder="AAPL, BTC, NVDA, QQQ..." />
+    <input id="name" placeholder="AAPL, BTC, NVDA, QQQ..." autocomplete="off" />
   </div>
 
   <div class="field">
     <label>Categoría</label>
-
     <select id="category">
       <option>Acciones</option>
       <option>ETF</option>
@@ -481,11 +475,9 @@ header{
   <button class="btn btn-add" onclick="addAsset()">
     + Agregar
   </button>
-
 </div>
 
 <div class="metrics">
-
   <div class="panel metric green">
     <div class="label">Portfolio</div>
     <div class="value" id="mTotal">$0</div>
@@ -506,78 +498,51 @@ header{
 
   <div class="panel metric red">
     <div class="label">HHI</div>
-    <div class="value" id="mHHI">—</div>
+    <div class="value" id="mHHI">0</div>
     <div class="sub" id="mHHILabel">concentración</div>
   </div>
-
 </div>
 
 <div class="grid">
-
   <div class="panel card">
-
-    <div class="card-title">
-      Distribución del portafolio
-    </div>
+    <div class="card-title">Distribución del portafolio</div>
 
     <div id="donutWrap">
-
       <canvas id="donut" width="280" height="280"></canvas>
-
       <div class="center">
         <div class="score" id="score">0%</div>
         <div class="small">portfolio health</div>
       </div>
-
     </div>
 
     <div class="legend" id="legend"></div>
 
     <div class="hhi">
-
-      <div class="card-title">
-        Riesgo de concentración
-      </div>
-
+      <div class="card-title">Riesgo de concentración</div>
       <div class="hhi-bar">
         <div class="hhi-fill" id="hhiFill"></div>
       </div>
-
       <div class="hhi-labels">
         <span>Diversificado</span>
         <span>Concentrado</span>
       </div>
-
     </div>
-
   </div>
 
   <div class="panel card">
-
-    <div class="card-title">
-      Holdings
-    </div>
-
+    <div class="card-title">Holdings</div>
     <div id="tableWrap"></div>
-
   </div>
-
 </div>
 
 <div class="panel rec">
-
   <div class="rec-icon" id="recIcon">📊</div>
-
-  <div class="rec-text" id="recText">
-    Agrega activos para comenzar.
-  </div>
-
+  <div class="rec-text" id="recText">Agrega activos para comenzar.</div>
 </div>
 
 </div>
 
 <script>
-
 const COLORS = {
   "Acciones":"#5b8df8",
   "ETF":"#a78bfa",
@@ -588,60 +553,57 @@ const COLORS = {
   "Real Estate":"#ff6fa7"
 };
 
+// Historial del estado métrico para animaciones fluidas relativas
+let metricState = {
+  total: 0,
+  diversification: 0,
+  hhi: 0
+};
+
 let assets = JSON.parse(localStorage.getItem("portfolio_assets") || "[]");
 
 function save(){
-  localStorage.setItem(
-    "portfolio_assets",
-    JSON.stringify(assets)
-  );
+  localStorage.setItem("portfolio_assets", JSON.stringify(assets));
 }
 
 function fmt(v){
-
-  if(v >= 1000000)
-    return '$' + (v/1000000).toFixed(2) + 'M';
-
-  if(v >= 1000)
-    return '$' + (v/1000).toFixed(1) + 'K';
-
+  if(v >= 1000000) return '$' + (v/1000000).toFixed(2) + 'M';
+  if(v >= 1000) return '$' + (v/1000).toFixed(1) + 'K';
   return '$' + v.toFixed(0);
 }
 
-function animateNumber(el,start,end,suffix=''){
-
+function animateNumber(el, start, end, formatter) {
   let startTime = null;
+  const duration = 600; 
 
   function update(t){
-
     if(!startTime) startTime = t;
+    const progress = Math.min((t - startTime) / duration, 1);
+    // Easing out cuadrático para mayor suavidad orgánica
+    const ease = progress * (2 - progress); 
+    const val = start + (end - start) * ease;
 
-    const progress = Math.min((t-startTime)/700,1);
+    el.textContent = formatter ? formatter(val) : Math.round(val);
 
-    const val = start + (end-start)*progress;
-
-    el.textContent =
-      typeof end === 'number'
-      ? Math.round(val) + suffix
-      : end;
-
-    if(progress < 1)
+    if(progress < 1) {
       requestAnimationFrame(update);
+    }
   }
-
   requestAnimationFrame(update);
 }
 
 function addAsset(){
-
-  const name = document.getElementById('name').value.trim();
+  const nameInput = document.getElementById('name');
+  const valInput = document.getElementById('value');
+  
+  const name = nameInput.value.trim();
   const category = document.getElementById('category').value;
-  const value = parseFloat(document.getElementById('value').value);
+  const value = parseFloat(valInput.value);
 
   if(!name || !value || value <= 0) return;
 
   assets.push({
-    id:Date.now(),
+    id: Date.now(),
     name,
     category,
     value
@@ -649,34 +611,41 @@ function addAsset(){
 
   save();
 
-  document.getElementById('name').value='';
-  document.getElementById('value').value='';
+  nameInput.value = '';
+  valInput.value = '';
+  nameInput.focus(); // Retorna el cursor automáticamente para UX veloz
 
   render();
 }
 
 function removeAsset(id){
-
   assets = assets.filter(a => a.id !== id);
-
   save();
   render();
 }
 
 function render(){
-
   const tableWrap = document.getElementById('tableWrap');
 
   if(!assets.length){
+    tableWrap.innerHTML = `<div class="empty">Sin posiciones todavía.</div>`;
+    
+    // Animación de regreso a cero limpio
+    animateNumber(document.getElementById('mTotal'), metricState.total, 0, fmt);
+    animateNumber(document.getElementById('mDiversification'), metricState.diversification, 0, v => Math.round(v) + '%');
+    animateNumber(document.getElementById('score'), metricState.diversification, 0, v => Math.round(v) + '%');
+    animateNumber(document.getElementById('mHHI'), metricState.hhi, 0);
 
-    tableWrap.innerHTML = `
-      <div class="empty">
-        Sin posiciones todavía.
-      </div>
-    `;
-
+    document.getElementById('mAssets').textContent = '0 activos';
+    document.getElementById('mTop').textContent = '—';
+    document.getElementById('mTopName').textContent = '—';
+    document.getElementById('mHHILabel').textContent = 'concentración';
+    document.getElementById('hhiFill').style.width = '0%';
+    document.getElementById('legend').innerHTML = '';
+    
+    metricState = { total: 0, diversification: 0, hhi: 0 };
     drawDonut([]);
-
+    updateRecommendation(0, null, 0);
     return;
   }
 
@@ -689,69 +658,38 @@ function render(){
   .sort((a,b)=>b.pct-a.pct);
 
   const categories = {};
-
   enriched.forEach(a=>{
-    categories[a.category] =
-      (categories[a.category] || 0) + a.pct;
+    categories[a.category] = (categories[a.category] || 0) + a.pct;
   });
 
   const catArr = Object.entries(categories);
-
-  const hhi =
-    enriched.reduce((s,a)=>
-      s + Math.pow(a.pct/100,2)
-    ,0);
-
-  const diversification =
-    Math.round((1-hhi)*100);
-
-  animateNumber(
-    document.getElementById('mTotal'),
-    0,
-    total
-  );
-
-  document.getElementById('mTotal')
-    .textContent = fmt(total);
-
-  document.getElementById('mAssets')
-    .textContent = enriched.length + ' activos';
-
-  document.getElementById('mDiversification')
-    .textContent = diversification + '%';
-
-  document.getElementById('score')
-    .textContent = diversification + '%';
-
-  document.getElementById('mTop')
-    .textContent = enriched[0].pct.toFixed(1) + '%';
-
-  document.getElementById('mTopName')
-    .textContent = enriched[0].name;
-
+  const hhi = enriched.reduce((s,a)=> s + Math.pow(a.pct/100,2), 0);
+  const diversification = Math.round((1-hhi)*100);
   const hhiScore = Math.round(hhi * 10000);
 
-  document.getElementById('mHHI')
-    .textContent = hhiScore;
+  // Ejecución de contadores animados fluidos desde el estado anterior
+  animateNumber(document.getElementById('mTotal'), metricState.total, total, fmt);
+  animateNumber(document.getElementById('mDiversification'), metricState.diversification, diversification, v => Math.round(v) + '%');
+  animateNumber(document.getElementById('score'), metricState.diversification, diversification, v => Math.round(v) + '%');
+  animateNumber(document.getElementById('mHHI'), metricState.hhi, hhiScore);
 
-  document.getElementById('mHHILabel')
-    .textContent =
-      hhiScore < 1500
-      ? 'diversificado'
-      : hhiScore < 2500
-      ? 'moderado'
-      : 'concentrado';
+  // Guardar estado actual para la siguiente interacción
+  metricState = { total, diversification, hhi: hhiScore };
 
-  document.getElementById('hhiFill')
-    .style.width = Math.min(hhi*100,100) + '%';
+  document.getElementById('mAssets').textContent = enriched.length + (enriched.length === 1 ? ' activo' : ' activos');
+  document.getElementById('mTop').textContent = enriched[0].pct.toFixed(1) + '%';
+  document.getElementById('mTopName').textContent = enriched[0].name;
+
+  document.getElementById('mHHILabel').textContent =
+    hhiScore < 1500 ? 'diversificado' : hhiScore < 2500 ? 'moderado' : 'concentrado';
+
+  document.getElementById('hhiFill').style.width = Math.min(hhi * 100, 100) + '%';
 
   drawDonut(catArr);
-
   renderLegend(catArr);
 
   tableWrap.innerHTML = `
     <table class="table">
-
       <thead>
         <tr>
           <th>Activo</th>
@@ -761,220 +699,120 @@ function render(){
           <th></th>
         </tr>
       </thead>
-
       <tbody>
-
         ${enriched.map(a=>`
-
           <tr>
-
             <td>
-
               <div class="asset">
-
-                <div class="asset-name">
-                  ${a.name}
-                </div>
-
-                <div
-                  class="tag"
-                  style="
-                    background:${COLORS[a.category]}22;
-                    color:${COLORS[a.category]}
-                  "
-                >
+                <div class="asset-name">${a.name}</div>
+                <div class="tag" style="background:${COLORS[a.category]}22; color:${COLORS[a.category]}">
                   ${a.category}
                 </div>
-
               </div>
-
             </td>
-
-            <td>
-              ${fmt(a.value)}
-            </td>
-
-            <td style="color:${COLORS[a.category]}">
-              ${a.pct.toFixed(1)}%
-            </td>
-
+            <td>${fmt(a.value)}</td>
+            <td style="color:${COLORS[a.category]}; font-weight:600;">${a.pct.toFixed(1)}%</td>
             <td style="width:180px">
-
               <div class="bar">
-
-                <div
-                  class="bar-fill"
-                  style="
-                    width:${a.pct}%;
-                    background:${COLORS[a.category]}
-                  "
-                ></div>
-
+                <div class="bar-fill" style="width:${a.pct}%; background:${COLORS[a.category]}"></div>
               </div>
-
             </td>
-
             <td>
-
-              <button
-                class="delete"
-                onclick="removeAsset(${a.id})"
-              >
-                ✕
-              </button>
-
+              <button class="delete" onclick="removeAsset(${a.id})">✕</button>
             </td>
-
           </tr>
-
         `).join('')}
-
       </tbody>
-
     </table>
   `;
 
-  updateRecommendation(
-    hhiScore,
-    enriched[0],
-    catArr.length
-  );
+  updateRecommendation(hhiScore, enriched[0], catArr.length);
 }
 
 function renderLegend(cats){
-
-  document.getElementById('legend').innerHTML =
-    cats.map(([name,pct])=>`
-
-      <div class="legend-item">
-
-        <div
-          class="dot"
-          style="background:${COLORS[name]}"
-        ></div>
-
-        <div class="legend-name">
-          ${name}
-        </div>
-
-        <div class="legend-val">
-          ${pct.toFixed(1)}%
-        </div>
-
-      </div>
-
-    `).join('');
+  document.getElementById('legend').innerHTML = cats.map(([name,pct])=>`
+    <div class="legend-item">
+      <div class="dot" style="background:${COLORS[name]}"></div>
+      <div class="legend-name">${name}</div>
+      <div class="legend-val">${pct.toFixed(1)}%</div>
+    </div>
+  `).join('');
 }
 
 function drawDonut(cats){
-
-  const canvas =
-    document.getElementById('donut');
-
+  const canvas = document.getElementById('donut');
   const ctx = canvas.getContext('2d');
-
   ctx.clearRect(0,0,280,280);
 
+  // Forzar limpieza absoluta de herencia de sombras previas
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = 'transparent';
+
   if(!cats.length){
-
     ctx.beginPath();
-
     ctx.arc(140,140,95,0,Math.PI*2);
-
-    ctx.strokeStyle='rgba(255,255,255,.06)';
-    ctx.lineWidth=24;
+    ctx.strokeStyle = 'rgba(255,255,255,.06)';
+    ctx.lineWidth = 24;
     ctx.stroke();
-
     return;
   }
 
   let start = -Math.PI/2;
+  const totalSegments = cats.length;
 
   cats.forEach(([name,pct])=>{
-
-    const angle =
-      (pct/100)*(Math.PI*2);
+    const angle = (pct/100)*(Math.PI*2);
 
     ctx.beginPath();
-
     ctx.strokeStyle = COLORS[name];
     ctx.lineWidth = 24;
-    ctx.lineCap = 'round';
+    
+    // Ajuste de línea: evita cortes feos si solo hay una categoría asignada
+    ctx.lineCap = totalSegments > 1 ? 'round' : 'butt';
 
-    ctx.shadowBlur = 18;
+    ctx.shadowBlur = 14;
     ctx.shadowColor = COLORS[name];
 
-    ctx.arc(
-      140,
-      140,
-      95,
-      start,
-      start + angle
-    );
-
+    // Compensación milimétrica del arco para armonizar los bordes redondeados nativos del canvas
+    const endAngle = start + angle;
+    ctx.arc(140, 140, 95, start, totalSegments > 1 ? endAngle - 0.03 : endAngle);
     ctx.stroke();
 
-    start += angle + 0.02;
+    start += angle;
   });
-
 }
 
-function updateRecommendation(hhi,top,categories){
+function updateRecommendation(hhi, top, categories){
+  const icon = document.getElementById('recIcon');
+  const text = document.getElementById('recText');
 
-  const icon =
-    document.getElementById('recIcon');
-
-  const text =
-    document.getElementById('recText');
+  if(!assets.length) {
+    icon.textContent = '📊';
+    text.innerHTML = 'Agrega activos para comenzar.';
+    return;
+  }
 
   if(hhi > 2500){
-
-    icon.textContent='⚠️';
-
-    text.innerHTML = `
-      Tu portafolio muestra una
-      <strong>concentración elevada</strong>.
-      <strong>${top.name}</strong>
-      representa
-      <strong>${top.pct.toFixed(1)}%</strong>
-      del total.
-      Considera añadir activos con menor correlación para reducir riesgo sistémico.
-    `;
-
+    icon.textContent = '⚠️';
+    text.innerHTML = `Tu portafolio muestra una <strong>concentración elevada</strong>. El activo de mayor peso es <strong>${top.name}</strong> con un <strong>${top.pct.toFixed(1)}%</strong>. Considera rebalancear distribuyendo capital hacia otras categorías para mitigar riesgos sistémicos.`;
   } else if(hhi > 1500){
-
-    icon.textContent='📈';
-
-    text.innerHTML = `
-      El portafolio tiene una
-      <strong>diversificación moderada</strong>.
-      Ya existe una estructura relativamente saludable entre categorías.
-      Puedes mejorar añadiendo bonos, commodities o cash defensivo.
-    `;
-
+    icon.textContent = '📈';
+    text.innerHTML = `El portafolio tiene una <strong>diversificación moderada</strong> distribuida en <strong>${categories} sectores</strong>. Tienes una estructura relativamente sana, podrías optimizar incorporando activos defensivos de baja correlación como Bonos o Cash.`;
   } else {
-
-    icon.textContent='✅';
-
-    text.innerHTML = `
-      Excelente estructura.
-      El portafolio se encuentra
-      <strong>bien diversificado</strong>
-      entre
-      <strong>${categories} categorías</strong>.
-      Mantén rebalanceos periódicos y evita sobreexposición futura.
-    `;
+    icon.textContent = '✅';
+    text.innerHTML = `Excelente arquitectura de inversión. El portafolio se encuentra <strong>altamente diversificado</strong> a lo largo de <strong>${categories} categorías</strong> estratégicas. Mantén revisiones periódicas para mitigar desviaciones orgánicas de precio.`;
   }
 }
 
-document
-.getElementById('value')
-.addEventListener('keydown',e=>{
-  if(e.key==='Enter') addAsset();
+// Escuchadores globales optimizados para el uso ágil del teclado (Enter en inputs)
+['name', 'value', 'category'].forEach(id => {
+  document.getElementById(id).addEventListener('keydown', e => {
+    if(e.key === 'Enter') addAsset();
+  });
 });
 
+// Render inicializador
 render();
-
 </script>
 
 </body>
