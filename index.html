@@ -1,539 +1,281 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Portfolio Intelligence Pro</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
-*{
-  margin:0;
-  padding:0;
-  box-sizing:border-box;
-}
-
+*{margin:0;padding:0;box-sizing:border-box;}
 :root{
-  --bg:#06080d;
-  --card:rgba(16,18,25,.72);
-  --border:rgba(255,255,255,.07);
-  --text:#edf1ff;
-  --muted:#6f7894;
-  --green:#b6ff65;
+  --bg:#050810;
+  --bg2:#080b14;
+  --card:rgba(14,17,28,0.9);
+  --border:rgba(255,255,255,0.055);
+  --border2:rgba(255,255,255,0.1);
+  --text:#e8ecff;
+  --muted:#5a627a;
+  --muted2:#8891aa;
+  --green:#b4ff5e;
+  --green-dim:rgba(180,255,94,0.12);
   --blue:#5b8df8;
-  --orange:#ffb347;
-  --red:#ff5370;
-  --purple:#a78bfa;
+  --blue-dim:rgba(91,141,248,0.12);
+  --orange:#f5a623;
+  --red:#ff4d6d;
+  --purple:#9d7fea;
+  --teal:#3dd9c5;
+  --pink:#ff6fa7;
 }
-
 body{
   min-height:100vh;
-  background:
-    radial-gradient(circle at top left, rgba(91,141,248,.14), transparent 35%),
-    radial-gradient(circle at bottom right, rgba(182,255,101,.08), transparent 35%),
-    var(--bg);
-
+  background:var(--bg);
+  background-image:
+    radial-gradient(ellipse 80% 50% at 10% 0%, rgba(91,141,248,0.08) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 90% 100%, rgba(180,255,94,0.06) 0%, transparent 60%);
   color:var(--text);
-  font-family:'Inter',sans-serif;
-  padding:40px 20px;
+  font-family:'DM Sans',sans-serif;
+  padding:36px 20px 60px;
 }
+.container{max-width:1340px;margin:auto;}
 
-.container{
-  max-width:1300px;
-  margin:auto;
+/* TOAST */
+#toastArea{position:fixed;bottom:28px;right:28px;z-index:999;display:flex;flex-direction:column;gap:10px;}
+.toast{
+  padding:12px 20px;border-radius:12px;font-size:.82rem;
+  font-family:'IBM Plex Mono',monospace;
+  backdrop-filter:blur(12px);
+  animation:toastIn .3s ease;
+  border:1px solid var(--border2);
 }
+.toast.ok{background:rgba(180,255,94,0.15);color:var(--green);border-color:rgba(180,255,94,0.3);}
+.toast.err{background:rgba(255,77,109,0.15);color:var(--red);border-color:rgba(255,77,109,0.3);}
+.toast.info{background:rgba(91,141,248,0.15);color:var(--blue);border-color:rgba(91,141,248,0.3);}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:none;}}
 
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:flex-end;
-  margin-bottom:28px;
-  flex-wrap: wrap;
-  gap: 15px;
+/* HEADER */
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:32px;flex-wrap:wrap;gap:16px;}
+.title h1{font-family:'Syne',sans-serif;font-size:clamp(2rem,5vw,3.2rem);font-weight:800;letter-spacing:-.06em;line-height:1;}
+.title h1 span{color:var(--green);}
+.title p{margin-top:9px;color:var(--muted);font-size:.72rem;font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.15em;}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+
+/* MONTH MANAGER */
+.month-tabs{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
+.month-tab{
+  padding:7px 15px;border-radius:999px;font-size:.72rem;cursor:pointer;
+  font-family:'IBM Plex Mono',monospace;font-weight:500;
+  background:transparent;border:1px solid var(--border2);color:var(--muted2);
+  transition:.2s;
 }
+.month-tab:hover{border-color:var(--blue);color:var(--blue);}
+.month-tab.active{background:var(--green-dim);border-color:rgba(180,255,94,.5);color:var(--green);}
+.month-tab.add-month{border-style:dashed;color:var(--muted);}
+.month-tab.add-month:hover{border-color:var(--green);color:var(--green);}
 
-.title h1{
-  font-size:clamp(2rem,5vw,3.5rem);
-  font-weight:800;
-  letter-spacing:-.06em;
+.header-actions{display:flex;gap:8px;}
+.icon-btn{
+  width:36px;height:36px;border-radius:10px;border:1px solid var(--border2);
+  background:transparent;color:var(--muted2);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:.95rem;
+  transition:.2s;
 }
+.icon-btn:hover{color:var(--text);border-color:var(--border2);background:rgba(255,255,255,.05);}
 
-.title h1 span{
-  color:var(--green);
-}
-
-.title p{
-  margin-top:8px;
-  color:var(--muted);
-  font-size:.8rem;
-  font-family:'JetBrains Mono',monospace;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-}
-
-.header-controls {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.month-selector {
-  background: #0d1017;
-  border: 1px solid var(--green);
-  color: var(--green);
-  padding: 8px 16px;
-  border-radius: 999px;
-  font-family: 'JetBrains Mono', monospace;
-  outline: none;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.badge{
-  padding:8px 14px;
-  border-radius:999px;
-  background:rgba(182,255,101,.12);
-  border:1px solid rgba(182,255,101,.3);
-  color:var(--green);
-  font-size:.7rem;
-  font-family:'JetBrains Mono',monospace;
-}
-
+/* PANEL base */
 .panel{
-  background:var(--card);
-  border:1px solid var(--border);
-  backdrop-filter:blur(16px);
-  border-radius:24px;
-  overflow:hidden;
-  box-shadow:
-    0 10px 40px rgba(0,0,0,.35),
-    inset 0 1px rgba(255,255,255,.03);
+  background:var(--card);border:1px solid var(--border);
+  backdrop-filter:blur(18px);border-radius:20px;
+  box-shadow:0 8px 32px rgba(0,0,0,.3),inset 0 1px rgba(255,255,255,.025);
 }
 
-.add-box{
-  padding:22px;
-  display:grid;
-  grid-template-columns:2fr 1fr 1fr auto;
-  gap:16px;
-  margin-bottom:22px;
+/* ADD FORM */
+.add-form{
+  padding:20px 22px;display:grid;
+  grid-template-columns:2fr 1fr 1.2fr 1.2fr auto;
+  gap:14px;margin-bottom:20px;align-items:end;
 }
-
-.field label{
-  display:block;
-  margin-bottom:8px;
-  font-size:.72rem;
-  color:var(--muted);
-  font-family:'JetBrains Mono',monospace;
-  text-transform:uppercase;
+.field label{display:block;margin-bottom:7px;font-size:.68rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.12em;}
+.field input,.field select{
+  width:100%;background:#0a0d18;border:1px solid rgba(255,255,255,.07);
+  color:var(--text);padding:11px 14px;border-radius:12px;outline:none;
+  font-family:'IBM Plex Mono',monospace;font-size:.85rem;transition:.2s;
 }
-
-.field input,
-.field select{
-  width:100%;
-  background:#0d1017;
-  border:1px solid rgba(255,255,255,.06);
-  color:white;
-  padding:14px;
-  border-radius:14px;
-  outline:none;
-  transition:.25s;
-  font-family:'JetBrains Mono',monospace;
-}
-
-.field input:focus,
-.field select:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 4px rgba(91,141,248,.15);
-}
-
-.btn{
-  border:none;
-  cursor:pointer;
-  border-radius:14px;
-  padding:14px 22px;
-  font-weight:700;
-  transition:.25s;
-}
-
+.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(91,141,248,.15);}
+.field select option{background:#0a0d18;}
 .btn-add{
-  align-self:end;
-  background:var(--green);
-  color:#081008;
+  background:var(--green);color:#050a00;border:none;cursor:pointer;
+  border-radius:12px;padding:11px 22px;font-weight:700;font-size:.85rem;
+  font-family:'Syne',sans-serif;letter-spacing:.03em;transition:.2s;white-space:nowrap;
+}
+.btn-add:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(180,255,94,.25);}
+
+/* METRICS */
+.metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px;}
+.metric{padding:22px 24px;border-radius:20px;position:relative;overflow:hidden;}
+.metric::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px;}
+.metric.m-green::after{background:var(--green);}
+.metric.m-blue::after{background:var(--blue);}
+.metric.m-orange::after{background:var(--orange);}
+.metric.m-red::after{background:var(--red);}
+.metric .m-label{color:var(--muted);font-size:.68rem;text-transform:uppercase;letter-spacing:.12em;font-family:'IBM Plex Mono',monospace;}
+.metric .m-value{margin-top:12px;font-size:2.1rem;font-weight:800;letter-spacing:-.05em;font-family:'Syne',sans-serif;}
+.metric .m-sub{margin-top:8px;font-size:.8rem;display:flex;align-items:center;gap:6px;}
+.metric .m-name{color:var(--muted2);}
+.badge-change{
+  font-size:.65rem;font-family:'IBM Plex Mono',monospace;padding:3px 7px;
+  border-radius:6px;font-weight:600;
+}
+.badge-change.up{background:rgba(180,255,94,.15);color:var(--green);}
+.badge-change.down{background:rgba(255,77,109,.15);color:var(--red);}
+.badge-change.flat{background:rgba(255,255,255,.07);color:var(--muted2);}
+
+/* MAIN GRID */
+.grid-main{display:grid;grid-template-columns:380px 1fr;gap:20px;margin-bottom:20px;}
+
+/* CARD */
+.card{padding:24px;}
+.card-title{font-size:.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-family:'IBM Plex Mono',monospace;display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+
+/* DONUT */
+#donutWrap{position:relative;width:220px;height:220px;margin:0 auto;}
+#donutCanvas{width:100%;height:100%;}
+.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
+.donut-score{font-size:2.6rem;font-weight:800;letter-spacing:-.06em;color:var(--green);font-family:'Syne',sans-serif;}
+.donut-sub{font-size:.62rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-family:'IBM Plex Mono',monospace;margin-top:4px;}
+
+/* HHI GAUGE */
+.gauge-wrap{margin-top:22px;display:flex;flex-direction:column;align-items:center;}
+.gauge-canvas-wrap{position:relative;width:160px;height:88px;margin:0 auto;}
+#gaugeCanvas{width:100%;height:100%;}
+.gauge-val{text-align:center;margin-top:4px;font-size:1.3rem;font-weight:700;font-family:'Syne',sans-serif;}
+.gauge-labels{display:flex;justify-content:space-between;width:160px;margin:0 auto;font-size:.6rem;color:var(--muted);font-family:'IBM Plex Mono',monospace;}
+
+/* LEGEND */
+.legend{margin-top:20px;display:flex;flex-direction:column;gap:10px;}
+.legend-item{display:flex;align-items:center;gap:9px;font-size:.82rem;}
+.legend-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.legend-name{flex:1;color:var(--muted2);}
+.legend-pct{font-family:'IBM Plex Mono',monospace;font-weight:500;}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;}
+table.tbl{width:100%;border-collapse:collapse;}
+table.tbl th{color:var(--muted);font-size:.65rem;text-transform:uppercase;letter-spacing:.1em;padding-bottom:14px;font-family:'IBM Plex Mono',monospace;text-align:left;white-space:nowrap;}
+table.tbl td{padding:12px 0;border-top:1px solid rgba(255,255,255,.045);}
+.asset-name{font-weight:600;font-size:.9rem;}
+.asset-tag{display:inline-block;font-size:.58rem;padding:3px 7px;border-radius:999px;font-family:'IBM Plex Mono',monospace;margin-top:5px;}
+.inline-val{
+  background:#080c18;border:1px solid rgba(255,255,255,.07);
+  color:var(--text);padding:7px 10px;border-radius:9px;
+  font-family:'IBM Plex Mono',monospace;width:110px;outline:none;font-size:.82rem;
+}
+.inline-val:focus{border-color:var(--green);}
+.pct-col{font-family:'IBM Plex Mono',monospace;font-weight:600;}
+.bar-wrap{width:120px;}
+.bar{height:5px;border-radius:999px;background:rgba(255,255,255,.07);overflow:hidden;}
+.bar-fill{height:100%;border-radius:999px;transition:width .5s ease;}
+.del-btn{
+  width:30px;height:30px;border-radius:9px;background:transparent;
+  border:1px solid rgba(255,255,255,.07);color:var(--muted);cursor:pointer;
+  transition:.2s;font-size:.8rem;
+}
+.del-btn:hover{color:var(--red);border-color:var(--red);}
+.clone-btn{
+  font-size:.68rem;padding:6px 12px;border-radius:8px;cursor:pointer;
+  background:var(--blue-dim);border:1px solid rgba(91,141,248,.3);
+  color:var(--blue);font-family:'IBM Plex Mono',monospace;transition:.2s;
+}
+.clone-btn:hover{background:var(--blue);color:#040810;}
+
+/* SECTOR CHART */
+.sector-bar-row{display:flex;flex-direction:column;gap:10px;margin-top:4px;}
+.sb-row{display:grid;grid-template-columns:110px 1fr 60px;gap:10px;align-items:center;}
+.sb-label{font-size:.75rem;color:var(--muted2);font-family:'IBM Plex Mono',monospace;text-overflow:ellipsis;overflow:hidden;white-space:nowrap;}
+.sb-bar{height:8px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;}
+.sb-fill{height:100%;border-radius:999px;transition:width .7s cubic-bezier(0.4,0,0.2,1);}
+.sb-val{font-size:.72rem;font-family:'IBM Plex Mono',monospace;text-align:right;color:var(--muted2);}
+
+/* LINE CHART */
+.chart-card{padding:24px;margin-bottom:20px;}
+.chart-wrap{position:relative;width:100%;height:300px;margin-top:14px;}
+#lineCanvas{width:100%;height:100%;}
+.chart-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:12px;}
+.chart-legend-item{display:flex;align-items:center;gap:6px;font-size:.7rem;color:var(--muted2);font-family:'IBM Plex Mono',monospace;}
+.chart-legend-line{width:18px;height:2px;border-radius:1px;}
+.chart-tooltip{
+  position:absolute;pointer-events:none;
+  background:rgba(8,11,20,0.95);border:1px solid var(--border2);
+  border-radius:10px;padding:10px 14px;font-family:'IBM Plex Mono',monospace;
+  font-size:.72rem;line-height:1.7;backdrop-filter:blur(8px);
+  transition:opacity .15s;opacity:0;z-index:10;white-space:nowrap;
 }
 
-.btn-add:hover{
-  transform:translateY(-2px);
-  box-shadow:0 10px 20px rgba(182,255,101,.2);
-}
+/* REC */
+.rec-card{padding:20px 24px;display:flex;gap:16px;align-items:flex-start;margin-bottom:20px;}
+.rec-icon{font-size:1.6rem;flex-shrink:0;margin-top:2px;}
+.rec-body{line-height:1.75;color:#c8d0eb;font-size:.88rem;}
+.rec-body strong{color:var(--green);}
 
-.btn-clone {
-  background: rgba(91,141,248,.15);
-  border: 1px solid rgba(91,141,248,.3);
-  color: var(--blue);
-  padding: 6px 12px;
-  border-radius: 8px;
-  font-size: 0.75rem;
-  cursor: pointer;
-  font-family: 'JetBrains Mono', monospace;
-  transition: 0.2s;
-}
-.btn-clone:hover {
-  background: var(--blue);
-  color: #06080d;
-}
+/* EMPTY */
+.empty{padding:48px;text-align:center;color:var(--muted);font-size:.88rem;}
 
-.metrics{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
-  margin-bottom:22px;
+/* MODAL */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(4px);
 }
+.modal{background:#0c101e;border:1px solid var(--border2);border-radius:18px;padding:28px;width:340px;}
+.modal h3{font-family:'Syne',sans-serif;font-size:1.1rem;margin-bottom:16px;}
+.modal input{
+  width:100%;background:#080b16;border:1px solid rgba(255,255,255,.1);
+  color:var(--text);padding:11px 14px;border-radius:10px;outline:none;
+  font-family:'IBM Plex Mono',monospace;margin-bottom:14px;
+}
+.modal input:focus{border-color:var(--green);}
+.modal-btns{display:flex;gap:10px;justify-content:flex-end;}
+.btn-cancel{background:transparent;border:1px solid var(--border2);color:var(--muted2);padding:9px 18px;border-radius:9px;cursor:pointer;font-size:.82rem;}
+.btn-confirm{background:var(--green);border:none;color:#050a00;padding:9px 18px;border-radius:9px;cursor:pointer;font-weight:700;font-size:.82rem;font-family:'Syne',sans-serif;}
 
-.metric{
-  padding:24px;
-  position:relative;
-}
+/* SECTION DIVIDER */
+.section-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;}
 
-.metric::before{
-  content:'';
-  position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:3px;
-}
-
-.metric.green::before{background:var(--green);}
-.metric.blue::before{background:var(--blue);}
-.metric.orange::before{background:var(--orange);}
-.metric.red::before{background:var(--red);}
-
-.metric .label{
-  color:var(--muted);
-  font-size:.72rem;
-  text-transform:uppercase;
-  letter-spacing:.12em;
-  font-family:'JetBrains Mono',monospace;
-}
-
-.metric .value{
-  margin-top:14px;
-  font-size:2.3rem;
-  font-weight:800;
-  letter-spacing:-.05em;
-}
-
-.metric .sub{
-  margin-top:10px;
-  color:var(--muted);
-  font-size:.85rem;
-}
-
-.grid{
-  display:grid;
-  grid-template-columns:420px 1fr;
-  gap:22px;
-  margin-bottom: 22px;
-}
-
-.card{
-  padding:26px;
-}
-
-.card-title{
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom:22px;
-  font-size:.75rem;
-  color:var(--muted);
-  text-transform:uppercase;
-  letter-spacing:.14em;
-  font-family:'JetBrains Mono',monospace;
-}
-
-#donutWrap{
-  width:280px;
-  height:280px;
-  position:relative;
-  margin:auto;
-}
-
-#donut{
-  width:100%;
-  height:100%;
-}
-
-.center{
-  position:absolute;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  pointer-events:none;
-}
-
-.center .score{
-  font-size:3rem;
-  font-weight:800;
-  letter-spacing:-.06em;
-  color:var(--green);
-}
-
-.center .small{
-  margin-top:6px;
-  font-size:.72rem;
-  text-transform:uppercase;
-  letter-spacing:.14em;
-  color:var(--muted);
-  font-family:'JetBrains Mono',monospace;
-}
-
-.legend{
-  margin-top:26px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.legend-item{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.dot{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-}
-
-.legend-name{
-  flex:1;
-}
-
-.legend-val{
-  color:var(--muted);
-  font-family:'JetBrains Mono',monospace;
-}
-
-.hhi{
-  margin-top:28px;
-}
-
-.hhi-bar{
-  margin-top:12px;
-  height:12px;
-  border-radius:999px;
-  background:#0e1118;
-  overflow:hidden;
-  position:relative;
-}
-
-.hhi-fill{
-  height:100%;
-  width:0%;
-  transition:1s cubic-bezier(0.4, 0, 0.2, 1);
-  background:linear-gradient(
-    90deg,
-    #b6ff65 0%,
-    #ffb347 50%,
-    #ff5370 100%
-  );
-}
-
-.hhi-labels{
-  margin-top:8px;
-  display:flex;
-  justify-content:space-between;
-  font-size:.7rem;
-  color:var(--muted);
-  font-family:'JetBrains Mono',monospace;
-}
-
-.table{
-  width:100%;
-  border-collapse:collapse;
-}
-
-.table th{
-  color:var(--muted);
-  text-transform:uppercase;
-  font-size:.68rem;
-  letter-spacing:.1em;
-  text-align:left;
-  padding-bottom:18px;
-  font-family:'JetBrains Mono',monospace;
-}
-
-.table td{
-  padding:14px 0;
-  border-top:1px solid rgba(255,255,255,.06);
-}
-
-.asset{
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-}
-
-.asset-name{
-  font-weight:600;
-}
-
-.tag{
-  width:max-content;
-  font-size:.62rem;
-  padding:4px 8px;
-  border-radius:999px;
-  font-family:'JetBrains Mono',monospace;
-}
-
-.bar{
-  width:100%;
-  height:7px;
-  border-radius:999px;
-  background:#0e1118;
-  overflow:hidden;
-}
-
-.bar-fill{
-  height:100%;
-  border-radius:999px;
-  transition:width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.input-inline-val {
-  background: #0d1017;
-  border: 1px solid rgba(255,255,255,.08);
-  color: #white;
-  padding: 6px 10px;
-  border-radius: 8px;
-  font-family: 'JetBrains Mono', monospace;
-  width: 110px;
-  color: white;
-  outline: none;
-}
-.input-inline-val:focus {
-  border-color: var(--green);
-}
-
-.delete{
-  width:34px;
-  height:34px;
-  border-radius:12px;
-  background:transparent;
-  border:1px solid rgba(255,255,255,.08);
-  color:var(--muted);
-  cursor:pointer;
-  transition:.25s;
-}
-
-.delete:hover{
-  color:var(--red);
-  border-color:var(--red);
-}
-
-/* Estilos Gráfico de Líneas Histórico */
-.history-card {
-  padding: 26px;
-  margin-bottom: 22px;
-}
-.canvas-line-container {
-  width: 100%;
-  height: 320px;
-  margin-top: 15px;
-  position: relative;
-}
-#lineChart {
-  width: 100%;
-  height: 100%;
-}
-
-.rec{
-  padding:24px;
-  display:flex;
-  gap:18px;
-  align-items:flex-start;
-}
-
-.rec-icon{
-  font-size:2rem;
-}
-
-.rec-text{
-  line-height:1.8;
-  color:#dbe1ff;
-}
-
-.rec-text strong{
-  color:var(--green);
-}
-
-.empty{
-  padding:50px;
-  text-align:center;
-  color:var(--muted);
-}
-
-@media(max-width:1100px){
-  .grid{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:780px){
-  .metrics{
-    grid-template-columns:1fr 1fr;
-  }
-  .add-box{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:500px){
-  .metrics{
-    grid-template-columns:1fr;
-  }
-  .metric .value{
-    font-size:1.9rem;
-  }
-}
+@media(max-width:1100px){.grid-main{grid-template-columns:1fr;}.section-row{grid-template-columns:1fr;}}
+@media(max-width:780px){.metrics{grid-template-columns:1fr 1fr;}.add-form{grid-template-columns:1fr;}}
+@media(max-width:500px){.metrics{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
+<div id="toastArea"></div>
+<div id="modalContainer"></div>
 
 <div class="container">
 
 <header>
   <div class="title">
     <h1>Portfolio<span>Intelligence</span></h1>
-    <p>Sistema avanzado de diversificación y riesgo histórico</p>
+    <p>Diversificación · Riesgo · Histórico</p>
   </div>
-
-  <div class="header-controls">
-    <select id="monthSelector" class="month-selector" onchange="switchMonth()">
-      <option value="Enero">Mes: Enero</option>
-      <option value="Febrero">Mes: Febrero</option>
-      <option value="Marzo">Mes: Marzo</option>
-      <option value="Abril">Mes: Abril</option>
-      <option value="Mayo" selected>Mes: Mayo</option>
-    </select>
-    <div class="badge">HISTORICAL TIMELINE v3.0</div>
+  <div class="header-right">
+    <div class="month-tabs" id="monthTabs"></div>
+    <div class="header-actions">
+      <button class="icon-btn" title="Exportar JSON" onclick="exportJSON()">⬇</button>
+      <label class="icon-btn" title="Importar JSON" style="cursor:pointer">
+        ⬆<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"/>
+      </label>
+    </div>
   </div>
 </header>
 
-<div class="panel add-box">
+<!-- ADD FORM -->
+<div class="panel add-form">
   <div class="field">
     <label>Activo</label>
-    <input id="name" placeholder="AAPL, BTC, NVDA, QQQ..." autocomplete="off" />
+    <input id="fName" placeholder="AAPL, BTC, OXY, QQQ…" autocomplete="off"/>
   </div>
-
   <div class="field">
     <label>Categoría</label>
-    <select id="category">
+    <select id="fCat">
       <option>Acciones</option>
       <option>ETF</option>
       <option>Crypto</option>
@@ -541,562 +283,741 @@ header{
       <option>Cash</option>
       <option>Materias primas</option>
       <option>Real Estate</option>
+      <option>Opciones</option>
     </select>
   </div>
-
   <div class="field">
-    <label>Valor</label>
-    <input id="value" type="number" placeholder="10000" />
+    <label>Valor ($)</label>
+    <input id="fVal" type="number" placeholder="10000"/>
   </div>
-
-  <button class="btn btn-add" onclick="addAsset()">
-    + Agregar
-  </button>
+  <div class="field">
+    <label>Notas (opcional)</label>
+    <input id="fNote" placeholder="Tesis, target…"/>
+  </div>
+  <button class="btn-add" onclick="addAsset()">+ Agregar</button>
 </div>
 
+<!-- METRICS -->
 <div class="metrics">
-  <div class="panel metric green">
-    <div class="label">Portfolio (Mes actual)</div>
-    <div class="value" id="mTotal">$0</div>
-    <div class="sub" id="mAssets">0 activos</div>
+  <div class="panel metric m-green">
+    <div class="m-label">Portfolio Total</div>
+    <div class="m-value" id="mTotal">$0</div>
+    <div class="m-sub">
+      <span class="m-name" id="mAssets">0 activos</span>
+      <span class="badge-change flat" id="mTotalChg">—</span>
+    </div>
   </div>
-
-  <div class="panel metric blue">
-    <div class="label">Diversificación</div>
-    <div class="value" id="mDiversification">0%</div>
-    <div class="sub">score general</div>
+  <div class="panel metric m-blue">
+    <div class="m-label">Diversificación</div>
+    <div class="m-value" id="mDiv">0%</div>
+    <div class="m-sub">
+      <span class="m-name">score general</span>
+      <span class="badge-change flat" id="mDivChg">—</span>
+    </div>
   </div>
-
-  <div class="panel metric orange">
-    <div class="label">Mayor posición</div>
-    <div class="value" id="mTop">—</div>
-    <div class="sub" id="mTopName">—</div>
+  <div class="panel metric m-orange">
+    <div class="m-label">Mayor posición</div>
+    <div class="m-value" id="mTop">—</div>
+    <div class="m-sub">
+      <span class="m-name" id="mTopName">—</span>
+      <span class="badge-change flat" id="mTopChg">—</span>
+    </div>
   </div>
-
-  <div class="panel metric red">
-    <div class="label">HHI</div>
-    <div class="value" id="mHHI">0</div>
-    <div class="sub" id="mHHILabel">concentración</div>
+  <div class="panel metric m-red">
+    <div class="m-label">HHI Concentración</div>
+    <div class="m-value" id="mHHI">0</div>
+    <div class="m-sub">
+      <span class="m-name" id="mHHILabel">—</span>
+      <span class="badge-change flat" id="mHHIChg">—</span>
+    </div>
   </div>
 </div>
 
-<div class="grid">
-  <div class="panel card">
-    <div class="card-title">Distribución del mes</div>
-
+<!-- MAIN GRID: DONUT + TABLE -->
+<div class="grid-main">
+  <!-- LEFT: DONUT + HHI GAUGE + LEYENDA -->
+  <div class="panel card" style="display:flex;flex-direction:column;">
+    <div class="card-title"><span>Distribución del mes</span></div>
     <div id="donutWrap">
-      <canvas id="donut" width="280" height="280"></canvas>
-      <div class="center">
-        <div class="score" id="score">0%</div>
-        <div class="small">month health</div>
+      <canvas id="donutCanvas" width="220" height="220"></canvas>
+      <div class="donut-center">
+        <div class="donut-score" id="donutScore">0%</div>
+        <div class="donut-sub">month health</div>
       </div>
     </div>
-
     <div class="legend" id="legend"></div>
-
-    <div class="hhi">
-      <div class="card-title">Riesgo de concentración</div>
-      <div class="hhi-bar">
-        <div class="hhi-fill" id="hhiFill"></div>
+    <div class="gauge-wrap">
+      <div class="card-title" style="width:100%;margin-top:22px;">
+        <span>Riesgo de concentración (HHI)</span>
       </div>
-      <div class="hhi-labels">
-        <span>Diversificado</span>
-        <span>Concentrado</span>
+      <div class="gauge-canvas-wrap">
+        <canvas id="gaugeCanvas" width="160" height="88"></canvas>
       </div>
+      <div class="gauge-val" id="gaugeVal">—</div>
+      <div class="gauge-labels"><span>Diversificado</span><span>Concentrado</span></div>
     </div>
   </div>
 
+  <!-- RIGHT: TABLA HOLDINGS -->
   <div class="panel card">
     <div class="card-title">
-      <span>Holdings del Mes</span>
-      <button class="btn-clone" onclick="clonePreviousMonth()">📋 Clonar mes anterior</button>
+      <span>Holdings — <span id="activeMonthLabel" style="color:var(--green)"></span></span>
+      <button class="clone-btn" onclick="clonePrev()">📋 Clonar mes anterior</button>
     </div>
     <div id="tableWrap"></div>
   </div>
 </div>
 
-<div class="panel history-card">
-  <div class="card-title">Crecimiento evolutivo de inversiones (Enero - Mayo)</div>
-  <div class="canvas-line-container">
-    <canvas id="lineChart"></canvas>
+<!-- SECTOR + NOTES -->
+<div class="section-row">
+  <div class="panel card">
+    <div class="card-title">Exposición por sector</div>
+    <div class="sector-bar-row" id="sectorBars"></div>
+  </div>
+  <div class="panel card">
+    <div class="card-title">Notas del mes</div>
+    <div id="notesWrap" style="display:flex;flex-direction:column;gap:10px;"></div>
   </div>
 </div>
 
-<div class="panel rec">
-  <div class="rec-icon" id="recIcon">📊</div>
-  <div class="rec-text" id="recText">Agrega activos para comenzar.</div>
+<!-- LINE CHART -->
+<div class="panel chart-card">
+  <div class="card-title">Evolución histórica del portafolio</div>
+  <div class="chart-wrap">
+    <canvas id="lineCanvas" aria-label="Gráfica de evolución histórica mensual"></canvas>
+    <div class="chart-tooltip" id="chartTooltip"></div>
+  </div>
+  <div class="chart-legend" id="chartLegend"></div>
 </div>
 
+<!-- RECOMENDACIÓN -->
+<div class="panel rec-card">
+  <div class="rec-icon" id="recIcon">📊</div>
+  <div class="rec-body" id="recText">Agrega activos para comenzar el análisis.</div>
 </div>
+
+</div><!-- /container -->
 
 <script>
-const COLORS = {
+const CAT_COLORS={
   "Acciones":"#5b8df8",
-  "ETF":"#a78bfa",
-  "Crypto":"#ffb347",
-  "Bonos":"#b6ff65",
-  "Cash":"#7b8199",
+  "ETF":"#9d7fea",
+  "Crypto":"#f5a623",
+  "Bonos":"#b4ff5e",
+  "Cash":"#6b7699",
   "Materias primas":"#3dd9c5",
-  "Real Estate":"#ff6fa7"
+  "Real Estate":"#ff6fa7",
+  "Opciones":"#ff9b5e"
 };
 
-const MONTHS_ORDER = ["Enero", "Febrero", "Marzo", "Abril", "Mayo"];
-
-// Datos semilla/historial realista precargado por si el LocalStorage está virgen
-const SEED_DATA = {
-  "Enero": [
-    { id: 1, name: "AAPL", category: "Acciones", value: 8000 },
-    { id: 2, name: "BTC", category: "Crypto", value: 4000 },
-    { id: 3, name: "QQQ", category: "ETF", value: 6000 }
+// ── DATA ─────────────────────────────────────────────
+const DEFAULT_MONTHS=["Enero","Febrero","Marzo","Abril","Mayo"];
+const SEED={
+  "Enero":[
+    {id:1,name:"AAPL",category:"Acciones",value:8000,note:""},
+    {id:2,name:"BTC",category:"Crypto",value:4000,note:""},
+    {id:3,name:"QQQ",category:"ETF",value:6000,note:""}
   ],
-  "Febrero": [
-    { id: 1, name: "AAPL", category: "Acciones", value: 8500 },
-    { id: 2, name: "BTC", category: "Crypto", value: 5200 },
-    { id: 3, name: "QQQ", category: "ETF", value: 6100 }
+  "Febrero":[
+    {id:4,name:"AAPL",category:"Acciones",value:8500,note:""},
+    {id:5,name:"BTC",category:"Crypto",value:5200,note:""},
+    {id:6,name:"QQQ",category:"ETF",value:6100,note:""}
   ],
-  "Marzo": [
-    { id: 1, name: "AAPL", category: "Acciones", value: 7900 },
-    { id: 2, name: "BTC", category: "Crypto", value: 3900 },
-    { id: 3, name: "QQQ", category: "ETF", value: 6400 }
+  "Marzo":[
+    {id:7,name:"AAPL",category:"Acciones",value:7900,note:""},
+    {id:8,name:"BTC",category:"Crypto",value:3900,note:""},
+    {id:9,name:"QQQ",category:"ETF",value:6400,note:""}
   ],
-  "Abril": [
-    { id: 1, name: "AAPL", category: "Acciones", value: 9200 },
-    { id: 2, name: "BTC", category: "Crypto", value: 7100 },
-    { id: 3, name: "QQQ", category: "ETF", value: 7000 }
+  "Abril":[
+    {id:10,name:"AAPL",category:"Acciones",value:9200,note:""},
+    {id:11,name:"BTC",category:"Crypto",value:7100,note:""},
+    {id:12,name:"QQQ",category:"ETF",value:7000,note:""},
+    {id:13,name:"OXY",category:"Acciones",value:3200,note:"Tesis Hormuz"}
   ],
-  "Mayo": [
-    { id: 1, name: "AAPL", category: "Acciones", value: 11000 },
-    { id: 2, name: "BTC", category: "Crypto", value: 9500 },
-    { id: 3, name: "QQQ", category: "ETF", value: 7800 }
+  "Mayo":[
+    {id:14,name:"AAPL",category:"Acciones",value:11000,note:""},
+    {id:15,name:"BTC",category:"Crypto",value:9500,note:""},
+    {id:16,name:"QQQ",category:"ETF",value:7800,note:""},
+    {id:17,name:"OXY",category:"Acciones",value:4100,note:"Tesis Hormuz"}
   ]
 };
 
-// Cargar del almacenamiento o usar el objeto histórico predeterminado
-let historicalWallet = JSON.parse(localStorage.getItem("portfolio_historical_wallet"));
-if(!historicalWallet || Object.keys(historicalWallet).length === 0) {
-  historicalWallet = SEED_DATA;
-  localStorage.setItem("portfolio_historical_wallet", JSON.stringify(historicalWallet));
-}
+let wallet=JSON.parse(localStorage.getItem("pip_wallet_v4")||"null");
+let months=JSON.parse(localStorage.getItem("pip_months_v4")||"null");
+if(!wallet){wallet=SEED;}
+if(!months){months=[...DEFAULT_MONTHS];}
+let activeMonth=months[months.length-1];
 
-let activeMonth = document.getElementById('monthSelector').value;
-
-let metricState = { total: 0, diversification: 0, hhi: 0 };
-
+// ── PERSISTENCE ──────────────────────────────────────
 function save(){
-  localStorage.setItem("portfolio_historical_wallet", JSON.stringify(historicalWallet));
+  localStorage.setItem("pip_wallet_v4",JSON.stringify(wallet));
+  localStorage.setItem("pip_months_v4",JSON.stringify(months));
 }
 
-function getActiveAssets() {
-  if(!historicalWallet[activeMonth]) historicalWallet[activeMonth] = [];
-  return historicalWallet[activeMonth];
+function getAssets(m=activeMonth){return wallet[m]||[];}
+
+// ── TOAST ─────────────────────────────────────────────
+function toast(msg,type="ok"){
+  const el=document.createElement("div");
+  el.className=`toast ${type}`;
+  el.textContent=msg;
+  document.getElementById("toastArea").appendChild(el);
+  setTimeout(()=>el.remove(),3000);
 }
 
+// ── FORMAT ────────────────────────────────────────────
 function fmt(v){
-  if(v >= 1000000) return '$' + (v/1000000).toFixed(2) + 'M';
-  if(v >= 1000) return '$' + (v/1000).toFixed(1) + 'K';
-  return '$' + v.toFixed(0);
+  if(v>=1e6)return'$'+(v/1e6).toFixed(2)+'M';
+  if(v>=1e3)return'$'+(v/1e3).toFixed(1)+'K';
+  return'$'+v.toFixed(0);
+}
+function pctFmt(v){return(v>=0?'+':'')+v.toFixed(1)+'%';}
+
+function changeDir(curr,prev){
+  if(!prev||prev===0)return{cls:'flat',text:'—'};
+  const d=((curr-prev)/prev)*100;
+  if(Math.abs(d)<0.1)return{cls:'flat',text:'≈ 0%'};
+  return{cls:d>0?'up':'down',text:pctFmt(d)};
 }
 
-function animateNumber(el, start, end, formatter) {
-  let startTime = null;
-  const duration = 500; 
-
-  function update(t){
-    if(!startTime) startTime = t;
-    const progress = Math.min((t - startTime) / duration, 1);
-    const ease = progress * (2 - progress); 
-    const val = start + (end - start) * ease;
-    el.textContent = formatter ? formatter(val) : Math.round(val);
-    if(progress < 1) requestAnimationFrame(update);
-  }
-  requestAnimationFrame(update);
-}
-
-function switchMonth() {
-  activeMonth = document.getElementById('monthSelector').value;
-  render();
-}
-
-function clonePreviousMonth() {
-  const currentIndex = MONTHS_ORDER.indexOf(activeMonth);
-  if(currentIndex === 0) {
-    alert("Enero es el primer mes, no hay un historial anterior que clonar.");
-    return;
-  }
-  const prevMonthName = MONTHS_ORDER[currentIndex - 1];
-  const prevMonthAssets = historicalWallet[prevMonthName] || [];
-
-  if(prevMonthAssets.length === 0) {
-    alert(`El mes de ${prevMonthName} está vacío.`);
-    return;
-  }
-
-  // Clonar profundamente modificando los ID de tiempo para evitar duplicados críticos
-  historicalWallet[activeMonth] = prevMonthAssets.map(a => ({
-    ...a,
-    id: Date.now() + Math.random()
-  }));
-
-  save();
-  render();
-}
-
-function updateInlineValue(id, valueString) {
-  const parsedVal = parseFloat(valueString);
-  if(isNaN(parsedVal) || parsedVal < 0) return;
-
-  const currentAssets = getActiveAssets();
-  const asset = currentAssets.find(a => a.id === id);
-  if(asset) {
-    asset.value = parsedVal;
-    save();
-    // Renderizado silencioso que actualiza canvas e histórico sin romper el foco del input
-    renderCalculationsOnly();
-  }
-}
-
-function addAsset(){
-  const nameInput = document.getElementById('name');
-  const valInput = document.getElementById('value');
-  
-  const name = nameInput.value.trim();
-  const category = document.getElementById('category').value;
-  const value = parseFloat(valInput.value);
-
-  if(!name || !value || value <= 0) return;
-
-  if(!historicalWallet[activeMonth]) historicalWallet[activeMonth] = [];
-  
-  historicalWallet[activeMonth].push({
-    id: Date.now(),
-    name,
-    category,
-    value
+// ── MONTH TABS ────────────────────────────────────────
+function renderTabs(){
+  const c=document.getElementById("monthTabs");
+  c.innerHTML='';
+  months.forEach(m=>{
+    const t=document.createElement("button");
+    t.className="month-tab"+(m===activeMonth?" active":"");
+    t.textContent=m;
+    t.onclick=()=>{activeMonth=m;renderTabs();render();};
+    // right-click to delete
+    t.addEventListener("contextmenu",e=>{
+      e.preventDefault();
+      if(months.length<=1){toast("No puedes eliminar el único mes","err");return;}
+      if(!confirm(`¿Eliminar el mes "${m}"? Se perderán sus datos.`))return;
+      months=months.filter(x=>x!==m);
+      delete wallet[m];
+      activeMonth=months[months.length-1];
+      save();renderTabs();render();
+      toast(`Mes "${m}" eliminado`,"info");
+    });
+    c.appendChild(t);
   });
+  const add=document.createElement("button");
+  add.className="month-tab add-month";
+  add.textContent="+ Mes";
+  add.onclick=openAddMonthModal;
+  c.appendChild(add);
+  document.getElementById("activeMonthLabel").textContent=activeMonth;
+}
 
+// ── MODAL ─────────────────────────────────────────────
+function openAddMonthModal(){
+  const mc=document.getElementById("modalContainer");
+  mc.innerHTML=`
+    <div class="modal-backdrop" onclick="closeModal(event,this)">
+      <div class="modal" onclick="event.stopPropagation()">
+        <h3>Agregar nuevo mes</h3>
+        <input id="newMonthInput" placeholder="Ej: Junio 2026" autocomplete="off"/>
+        <div class="modal-btns">
+          <button class="btn-cancel" onclick="document.getElementById('modalContainer').innerHTML=''">Cancelar</button>
+          <button class="btn-confirm" onclick="confirmAddMonth()">Agregar</button>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(()=>document.getElementById("newMonthInput").focus(),50);
+}
+function closeModal(e,el){if(e.target===el)el.innerHTML='';}
+function confirmAddMonth(){
+  const v=document.getElementById("newMonthInput").value.trim();
+  if(!v){toast("Escribe un nombre","err");return;}
+  if(months.includes(v)){toast("Ese mes ya existe","err");return;}
+  months.push(v);
+  wallet[v]=[];
+  activeMonth=v;
   save();
+  document.getElementById("modalContainer").innerHTML='';
+  renderTabs();render();
+  toast(`Mes "${v}" creado`,"ok");
+}
 
-  nameInput.value = '';
-  valInput.value = '';
-  nameInput.focus();
-
+// ── ADD ASSET ─────────────────────────────────────────
+function addAsset(){
+  const name=document.getElementById("fName").value.trim().toUpperCase();
+  const cat=document.getElementById("fCat").value;
+  const val=parseFloat(document.getElementById("fVal").value);
+  const note=document.getElementById("fNote").value.trim();
+  if(!name||!val||val<=0){toast("Nombre y valor requeridos","err");return;}
+  if(!wallet[activeMonth])wallet[activeMonth]=[];
+  wallet[activeMonth].push({id:Date.now()+Math.random(),name,category:cat,value:val,note});
+  save();
+  document.getElementById("fName").value='';
+  document.getElementById("fVal").value='';
+  document.getElementById("fNote").value='';
+  document.getElementById("fName").focus();
+  toast(`${name} agregado a ${activeMonth}`,"ok");
   render();
 }
 
 function removeAsset(id){
-  historicalWallet[activeMonth] = getActiveAssets().filter(a => a.id !== id);
-  save();
-  render();
+  wallet[activeMonth]=getAssets().filter(a=>a.id!==id);
+  save();render();
 }
 
-// Render estructural completo
-function render(){
-  const tableWrap = document.getElementById('tableWrap');
-  const assetsList = getActiveAssets();
+function updateVal(id,v){
+  const p=parseFloat(v);
+  if(isNaN(p)||p<0)return;
+  const a=getAssets().find(x=>x.id===id);
+  if(a){a.value=p;save();renderCalc();}
+}
 
-  if(!assetsList.length){
-    tableWrap.innerHTML = `<div class="empty">Sin posiciones registradas en ${activeMonth}. Prueba usar el botón de clonar.</div>`;
-    renderCalculationsOnly();
+// ── CLONE PREV ────────────────────────────────────────
+function clonePrev(){
+  const idx=months.indexOf(activeMonth);
+  if(idx===0){toast("No hay mes anterior que clonar","err");return;}
+  const prev=months[idx-1];
+  const src=getAssets(prev);
+  if(!src.length){toast(`${prev} está vacío`,"err");return;}
+  wallet[activeMonth]=src.map(a=>({...a,id:Date.now()+Math.random()}));
+  save();render();
+  toast(`Clonado desde ${prev}`,"ok");
+}
+
+// ── EXPORT / IMPORT ───────────────────────────────────
+function exportJSON(){
+  const data=JSON.stringify({months,wallet},null,2);
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(new Blob([data],{type:"application/json"}));
+  a.download=`portfolio_${activeMonth.toLowerCase()}_${Date.now()}.json`;
+  a.click();
+  toast("Exportado como JSON","ok");
+}
+function importJSON(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(!d.months||!d.wallet)throw new Error();
+      months=d.months;wallet=d.wallet;
+      activeMonth=months[months.length-1];
+      save();renderTabs();render();
+      toast("Portafolio importado correctamente","ok");
+    }catch{toast("JSON inválido","err");}
+  };
+  r.readAsText(f);
+  e.target.value='';
+}
+
+// ── MAIN RENDER ───────────────────────────────────────
+function render(){
+  renderTabs();
+  buildTable();
+  renderCalc();
+}
+
+function buildTable(){
+  const w=document.getElementById("tableWrap");
+  const list=getAssets();
+  if(!list.length){
+    w.innerHTML=`<div class="empty">Sin posiciones en ${activeMonth}.<br/>Agrega activos o clona el mes anterior.</div>`;
     return;
   }
-
-  tableWrap.innerHTML = `
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Activo</th>
-          <th>Valor ($)</th>
-          <th>%</th>
-          <th>Distribución</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        ${assetsList.map(a=>`
-          <tr>
-            <td>
-              <div class="asset">
-                <div class="asset-name">${a.name}</div>
-                <div class="tag" style="background:${COLORS[a.category]}22; color:${COLORS[a.category]}">
-                  ${a.category}
-                </div>
-              </div>
-            </td>
-            <td>
-              <input type="number" class="input-inline-val" value="${a.value}" oninput="updateInlineValue(${a.id}, this.value)" />
-            </td>
-            <td id="pct-${a.id}" style="color:${COLORS[a.category]}; font-weight:600;">0%</td>
-            <td style="width:140px">
-              <div class="bar">
-                <div id="bar-${a.id}" class="bar-fill" style="width:0%; background:${COLORS[a.category]}"></div>
-              </div>
-            </td>
-            <td>
-              <button class="delete" onclick="removeAsset(${a.id})">✕</button>
-            </td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-
-  renderCalculationsOnly();
+  w.innerHTML=`
+  <div class="tbl-wrap">
+  <table class="tbl">
+    <thead><tr>
+      <th>Activo</th><th>Valor ($)</th><th>Peso</th><th>Barra</th><th></th>
+    </tr></thead>
+    <tbody>
+    ${list.map(a=>`
+      <tr>
+        <td>
+          <div class="asset-name">${a.name}</div>
+          <div class="asset-tag" style="background:${CAT_COLORS[a.category]}18;color:${CAT_COLORS[a.category]}">${a.category}</div>
+        </td>
+        <td><input class="inline-val" type="number" value="${a.value}" oninput="updateVal(${a.id},this.value)"/></td>
+        <td class="pct-col" id="pct-${a.id}" style="color:${CAT_COLORS[a.category]}">0%</td>
+        <td class="bar-wrap">
+          <div class="bar"><div class="bar-fill" id="bar-${a.id}" style="background:${CAT_COLORS[a.category]}"></div></div>
+        </td>
+        <td><button class="del-btn" onclick="removeAsset(${a.id})">✕</button></td>
+      </tr>
+    `).join('')}
+    </tbody>
+  </table>
+  </div>`;
 }
 
-// Ejecuta la matemática pura y redibuja los dos canvas coordinadamente
-function renderCalculationsOnly() {
-  const assetsList = getActiveAssets();
-  const total = assetsList.reduce((s,a)=>s+a.value,0);
+function renderCalc(){
+  const list=getAssets();
+  const total=list.reduce((s,a)=>s+a.value,0);
+  const enriched=list.map(a=>({...a,pct:total>0?(a.value/total)*100:0})).sort((a,b)=>b.pct-a.pct);
 
-  const enriched = assetsList.map(a=>({
-    ...a,
-    pct: total > 0 ? (a.value/total)*100 : 0
-  })).sort((a,b)=>b.pct-a.pct);
-
-  // Actualizar indicadores visuales de porcentaje en la tabla viva
-  enriched.forEach(a => {
-    const pctEl = document.getElementById(`pct-${a.id}`);
-    const barEl = document.getElementById(`bar-${a.id}`);
-    if(pctEl) pctEl.textContent = a.pct.toFixed(1) + '%';
-    if(barEl) barEl.style.width = a.pct + '%';
-  });
-
-  const categories = {};
   enriched.forEach(a=>{
-    categories[a.category] = (categories[a.category] || 0) + a.pct;
+    const pe=document.getElementById(`pct-${a.id}`);
+    const be=document.getElementById(`bar-${a.id}`);
+    if(pe)pe.textContent=a.pct.toFixed(1)+'%';
+    if(be)be.style.width=a.pct+'%';
   });
 
-  const catArr = Object.entries(categories);
-  const hhi = enriched.reduce((s,a)=> s + Math.pow(a.pct/100,2), 0);
-  const diversification = total > 0 ? Math.round((1-hhi)*100) : 0;
-  const hhiScore = total > 0 ? Math.round(hhi * 10000) : 0;
+  // categories
+  const cats={};
+  enriched.forEach(a=>cats[a.category]=(cats[a.category]||0)+a.pct);
+  const catArr=Object.entries(cats).sort((a,b)=>b[1]-a[1]);
 
-  animateNumber(document.getElementById('mTotal'), metricState.total, total, fmt);
-  animateNumber(document.getElementById('mDiversification'), metricState.diversification, diversification, v => Math.round(v) + '%');
-  animateNumber(document.getElementById('score'), metricState.diversification, diversification, v => Math.round(v) + '%');
-  animateNumber(document.getElementById('mHHI'), metricState.hhi, hhiScore);
+  // hhi
+  const hhi=enriched.reduce((s,a)=>s+Math.pow(a.pct/100,2),0);
+  const div=total>0?Math.round((1-hhi)*100):0;
+  const hhiScore=total>0?Math.round(hhi*10000):0;
 
-  metricState = { total, diversification, hhi: hhiScore };
+  // prev month for comparison
+  const prevIdx=months.indexOf(activeMonth)-1;
+  const prev=prevIdx>=0?months[prevIdx]:null;
+  const prevList=prev?getAssets(prev):[];
+  const prevTotal=prevList.reduce((s,a)=>s+a.value,0);
+  const prevHHI=prevList.length?prevList.reduce((s,a)=>s+Math.pow((a.value/prevTotal),2),0)*10000:null;
+  const prevDiv=prevTotal>0?Math.round((1-(prevHHI/10000))*100):null;
+  const prevEnriched=prevList.map(a=>({...a,pct:prevTotal>0?(a.value/prevTotal)*100:0})).sort((a,b)=>b.pct-a.pct);
+  const prevTop=prevEnriched[0];
 
-  document.getElementById('mAssets').textContent = enriched.length + (enriched.length === 1 ? ' activo' : ' activos');
-  document.getElementById('mTop').textContent = enriched.length ? enriched[0].pct.toFixed(1) + '%' : '—';
-  document.getElementById('mTopName').textContent = enriched.length ? enriched[0].name : '—';
+  // metric updates
+  setMetric("mTotal",total,fmt(total));
+  setMetric("mDiv",div,div+'%');
+  setMetric("mTop",enriched[0]?enriched[0].pct:0,enriched[0]?enriched[0].pct.toFixed(1)+'%':'—');
+  setMetric("mHHI",hhiScore,hhiScore.toString());
+  document.getElementById("mAssets").textContent=enriched.length+(enriched.length===1?' activo':' activos');
+  document.getElementById("mTopName").textContent=enriched[0]?enriched[0].name:'—';
 
-  document.getElementById('mHHILabel').textContent =
-    total === 0 ? 'concentración' : hhiScore < 1500 ? 'diversificado' : hhiScore < 2500 ? 'moderado' : 'concentrado';
+  // hhi label
+  document.getElementById("mHHILabel").textContent=
+    total===0?'—':hhiScore<1500?'diversificado':hhiScore<2500?'moderado':'concentrado';
 
-  document.getElementById('hhiFill').style.width = Math.min(hhi * 100, 100) + '%';
+  // change badges
+  setBadge("mTotalChg",changeDir(total,prevTotal));
+  setBadge("mDivChg",changeDir(div,prevDiv));
+  setBadge("mTopChg",enriched[0]&&prevTop?changeDir(enriched[0].pct,prevTop.pct):({cls:'flat',text:'—'}));
+  setBadge("mHHIChg",prevHHI!=null?changeDir(hhiScore,prevHHI):{cls:'flat',text:'—'});
+
+  // donut score
+  document.getElementById("donutScore").textContent=div+'%';
 
   drawDonut(catArr);
   renderLegend(catArr);
-  updateRecommendation(hhiScore, enriched[0], catArr.length);
-  
-  // ¡Redibujar el motor del gráfico de líneas históricas!
+  drawGauge(hhi);
+  renderSectorBars(catArr,total);
+  renderNotes(enriched);
   drawLineChart();
+  updateRec(hhiScore,enriched[0],catArr.length,total,prev,prevTotal);
 }
 
-function renderLegend(cats){
-  document.getElementById('legend').innerHTML = cats.map(([name,pct])=>`
-    <div class="legend-item">
-      <div class="dot" style="background:${COLORS[name]}"></div>
-      <div class="legend-name">${name}</div>
-      <div class="legend-val">${pct.toFixed(1)}%</div>
-    </div>
-  `).join('');
+function setMetric(id,raw,display){
+  document.getElementById(id).textContent=display;
+}
+function setBadge(id,chg){
+  const el=document.getElementById(id);
+  el.className=`badge-change ${chg.cls}`;
+  el.textContent=chg.text;
 }
 
+// ── DONUT ─────────────────────────────────────────────
 function drawDonut(cats){
-  const canvas = document.getElementById('donut');
-  const ctx = canvas.getContext('2d');
-  ctx.clearRect(0,0,280,280);
-  ctx.shadowBlur = 0;
-  ctx.shadowColor = 'transparent';
-
+  const c=document.getElementById("donutCanvas");
+  const ctx=c.getContext("2d");
+  const W=220,H=220,cx=110,cy=110,r=85,lw=22;
+  ctx.clearRect(0,0,W,H);
   if(!cats.length){
-    ctx.beginPath();
-    ctx.arc(140,140,95,0,Math.PI*2);
-    ctx.strokeStyle = 'rgba(255,255,255,.06)';
-    ctx.lineWidth = 24;
-    ctx.stroke();
-    return;
+    ctx.beginPath();ctx.arc(cx,cy,r,0,Math.PI*2);
+    ctx.strokeStyle="rgba(255,255,255,.05)";ctx.lineWidth=lw;ctx.stroke();return;
   }
-
-  let start = -Math.PI/2;
-  const totalSegments = cats.length;
-
+  let start=-Math.PI/2;
   cats.forEach(([name,pct])=>{
-    const angle = (pct/100)*(Math.PI*2);
+    const angle=(pct/100)*Math.PI*2;
     ctx.beginPath();
-    ctx.strokeStyle = COLORS[name];
-    ctx.lineWidth = 24;
-    ctx.lineCap = totalSegments > 1 ? 'round' : 'butt';
-    ctx.shadowBlur = 14;
-    ctx.shadowColor = COLORS[name];
-    const endAngle = start + angle;
-    ctx.arc(140, 140, 95, start, totalSegments > 1 ? endAngle - 0.03 : endAngle);
+    ctx.arc(cx,cy,r,start,start+angle-(cats.length>1?.04:0));
+    ctx.strokeStyle=CAT_COLORS[name];
+    ctx.lineWidth=lw;
+    ctx.lineCap=cats.length>1?"round":"butt";
+    ctx.shadowBlur=10;ctx.shadowColor=CAT_COLORS[name];
     ctx.stroke();
-    start += angle;
+    ctx.shadowBlur=0;
+    start+=angle;
   });
 }
 
-// MOTOR ALGEBRAICO GRÁFICO: Dibuja líneas de tendencia mensuales personalizadas por categoría
-function drawLineChart() {
-  const canvas = document.getElementById('lineChart');
-  if(!canvas) return;
-  const ctx = canvas.getContext('2d');
-  
-  // Escalar responsivamente el Canvas interno al contenedor real CSS
-  const rect = canvas.parentNode.getBoundingClientRect();
-  canvas.width = rect.width * window.devicePixelRatio;
-  canvas.height = 320 * window.devicePixelRatio;
-  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+// ── GAUGE ─────────────────────────────────────────────
+function drawGauge(hhi){
+  const c=document.getElementById("gaugeCanvas");
+  const ctx=c.getContext("2d");
+  const W=160,H=88,cx=80,cy=80,r=65,lw=14;
+  ctx.clearRect(0,0,W,H);
+  // track
+  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,0);
+  ctx.strokeStyle="rgba(255,255,255,.07)";ctx.lineWidth=lw;ctx.lineCap="round";ctx.stroke();
+  // fill (hhi 0..1 maps to 0..Math.PI)
+  const fillAngle=Math.min(hhi,1)*Math.PI;
+  if(fillAngle>0){
+    const t=hhi; // 0..1
+    // color lerp: green → orange → red
+    let col;
+    if(t<0.5){
+      const f=t*2;
+      col=lerpColor("#b4ff5e","#f5a623",f);
+    }else{
+      const f=(t-.5)*2;
+      col=lerpColor("#f5a623","#ff4d6d",f);
+    }
+    ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+fillAngle);
+    ctx.strokeStyle=col;ctx.lineWidth=lw;ctx.lineCap="round";
+    ctx.shadowBlur=8;ctx.shadowColor=col;
+    ctx.stroke();ctx.shadowBlur=0;
+  }
+  // needle
+  const needleAngle=Math.PI+fillAngle;
+  const nx=cx+Math.cos(needleAngle)*r;
+  const ny=cy+Math.sin(needleAngle)*r;
+  ctx.beginPath();ctx.arc(nx,ny,4,0,Math.PI*2);
+  ctx.fillStyle="#ffffff";ctx.fill();
 
-  ctx.clearRect(0, 0, rect.width, 320);
-  ctx.shadowBlur = 0;
-  ctx.shadowColor = 'transparent';
+  const hhiScore=Math.round(hhi*10000);
+  const gv=document.getElementById("gaugeVal");
+  gv.textContent=hhiScore===0?'—':hhiScore.toString();
+  gv.style.color=hhi<.15?"#b4ff5e":hhi<.25?"#f5a623":"#ff4d6d";
+}
 
-  // 1. Recopilar datos históricos estructurados de todas las categorías + total general
-  let historyByMonth = {}; 
-  let globalMax = 2000; // Umbral base de altura
+function lerpColor(a,b,t){
+  const parse=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
+  const [r1,g1,b1]=parse(a);const [r2,g2,b2]=parse(b);
+  return`rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
+}
 
-  MONTHS_ORDER.forEach(m => {
-    historyByMonth[m] = { Total: 0 };
-    // Inicializar las categorías conocidas a cero
-    Object.keys(COLORS).forEach(c => historyByMonth[m][c] = 0);
+// ── LEGEND ────────────────────────────────────────────
+function renderLegend(cats){
+  document.getElementById("legend").innerHTML=cats.map(([n,p])=>`
+    <div class="legend-item">
+      <div class="legend-dot" style="background:${CAT_COLORS[n]}"></div>
+      <div class="legend-name">${n}</div>
+      <div class="legend-pct" style="color:${CAT_COLORS[n]}">${p.toFixed(1)}%</div>
+    </div>`).join('');
+}
 
-    const monthAssets = historicalWallet[m] || [];
-    monthAssets.forEach(a => {
-      historyByMonth[m][a.category] = (historyByMonth[m][a.category] || 0) + a.value;
-      historyByMonth[m].Total += a.value;
+// ── SECTOR BARS ───────────────────────────────────────
+function renderSectorBars(catArr,total){
+  const top=catArr[0]?catArr[0][1]:100;
+  document.getElementById("sectorBars").innerHTML=catArr.length
+    ?catArr.map(([n,p])=>`
+      <div class="sb-row">
+        <div class="sb-label">${n}</div>
+        <div class="sb-bar"><div class="sb-fill" style="width:${(p/top)*100}%;background:${CAT_COLORS[n]}"></div></div>
+        <div class="sb-val">${p.toFixed(1)}%</div>
+      </div>`).join('')
+    :'<div class="empty" style="padding:20px">Sin datos</div>';
+}
+
+// ── NOTES ─────────────────────────────────────────────
+function renderNotes(enriched){
+  const withNotes=enriched.filter(a=>a.note);
+  document.getElementById("notesWrap").innerHTML=withNotes.length
+    ?withNotes.map(a=>`
+      <div style="border-left:2px solid ${CAT_COLORS[a.category]};padding:8px 12px;border-radius:0 8px 8px 0;background:${CAT_COLORS[a.category]}0d">
+        <div style="font-size:.75rem;font-weight:600;color:${CAT_COLORS[a.category]};font-family:'IBM Plex Mono',monospace">${a.name}</div>
+        <div style="font-size:.82rem;color:var(--muted2);margin-top:3px">${a.note}</div>
+      </div>`).join('')
+    :`<div class="empty" style="padding:20px">Agrega notas a tus activos para verlas aquí.</div>`;
+}
+
+// ── LINE CHART ────────────────────────────────────────
+let lineHover={x:null};
+function drawLineChart(){
+  const c=document.getElementById("lineCanvas");
+  if(!c)return;
+  const wrap=c.parentNode;
+  const rect=wrap.getBoundingClientRect();
+  const W=rect.width*devicePixelRatio;
+  const H=300*devicePixelRatio;
+  c.width=W;c.height=H;
+  c.style.width=rect.width+'px';c.style.height='300px';
+  const ctx=c.getContext("2d");
+  ctx.scale(devicePixelRatio,devicePixelRatio);
+  const cW=rect.width,cH=300;
+  ctx.clearRect(0,0,cW,cH);
+
+  const pX=62,pY=30,pR=18,pB=36;
+  const gW=cW-pX-pR,gH=cH-pY-pB;
+
+  // build data
+  let histData={};let globalMax=500;
+  months.forEach(m=>{
+    histData[m]={Total:0};
+    Object.keys(CAT_COLORS).forEach(cat=>histData[m][cat]=0);
+    (wallet[m]||[]).forEach(a=>{
+      histData[m][a.category]=(histData[m][a.category]||0)+a.value;
+      histData[m].Total+=a.value;
     });
-
-    if(historyByMonth[m].Total > globalMax) globalMax = historyByMonth[m].Total;
+    if(histData[m].Total>globalMax)globalMax=histData[m].Total;
   });
+  globalMax*=1.08;
 
-  // Márgenes internos de la retícula matemática
-  const paddingX = 65;
-  const paddingY = 40;
-  const graphWidth = rect.width - paddingX - 30;
-  const graphHeight = 320 - paddingY - 40;
+  const stepX=months.length>1?gW/(months.length-1):gW;
 
-  // 2. Dibujar líneas guía de fondo y escala monetaria Y
-  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
-  ctx.lineWidth = 1;
-  ctx.fillStyle = 'var(--muted)';
-  ctx.font = '10px "JetBrains Mono", monospace';
-  
-  const gridLines = 4;
-  for (let i = 0; i <= gridLines; i++) {
-    const y = paddingY + (graphHeight / gridLines) * i;
-    const valueLabel = globalMax - ((globalMax / gridLines) * i);
-    
-    ctx.beginPath();
-    ctx.moveTo(paddingX, y);
-    ctx.lineTo(paddingX + graphWidth, y);
-    ctx.stroke();
-    
-    ctx.fillText(fmt(valueLabel), 10, y + 4);
+  // grid lines
+  ctx.strokeStyle="rgba(255,255,255,0.04)";ctx.lineWidth=1;
+  ctx.fillStyle="rgba(90,98,122,0.9)";
+  ctx.font=`10px "IBM Plex Mono",monospace`;
+  for(let i=0;i<=4;i++){
+    const y=pY+(gH/4)*i;
+    ctx.beginPath();ctx.moveTo(pX,y);ctx.lineTo(pX+gW,y);ctx.stroke();
+    const lbl=fmt(globalMax-((globalMax/4)*i));
+    ctx.fillText(lbl,4,y+4);
   }
 
-  // 3. Dibujar etiquetas de meses X
-  const stepX = graphWidth / (MONTHS_ORDER.length - 1);
-  MONTHS_ORDER.forEach((m, index) => {
-    const x = paddingX + stepX * index;
-    ctx.fillStyle = (m === activeMonth) ? 'var(--green)' : 'var(--muted)';
-    ctx.fillText(m, x - 15, 320 - 15);
-    
-    // Línea vertical punteada tenue para el mes activo
-    if(m === activeMonth) {
-      ctx.strokeStyle = 'rgba(182, 255, 101, 0.15)';
-      ctx.beginPath();
-      ctx.moveTo(x, paddingY);
-      ctx.lineTo(x, paddingY + graphHeight);
-      ctx.stroke();
+  // x labels
+  months.forEach((m,i)=>{
+    const x=pX+(months.length>1?stepX*i:gW/2);
+    ctx.fillStyle=m===activeMonth?"#b4ff5e":"rgba(90,98,122,0.8)";
+    ctx.fillText(m.substring(0,3),x-10,cH-8);
+    if(m===activeMonth){
+      ctx.strokeStyle="rgba(180,255,94,0.12)";ctx.lineWidth=1;
+      ctx.beginPath();ctx.moveTo(x,pY);ctx.lineTo(x,pY+gH);ctx.stroke();
     }
   });
 
-  // 4. Graficar de forma independiente cada línea de color por categoría activa
-  const categoriesToPlot = ['Total', ...Object.keys(COLORS)];
+  // plot lines
+  const catsToPlot=["Total",...Object.keys(CAT_COLORS)];
+  const legendItems=[];
 
-  categoriesToPlot.forEach(cat => {
-    // Comprobar si la categoría tiene saldo o registros reales para no pintar líneas vacías en el piso
-    let hasVolume = MONTHS_ORDER.some(m => historyByMonth[m][cat] > 0);
-    if(!hasVolume) return;
+  catsToPlot.forEach(cat=>{
+    const hasVol=months.some(m=>(histData[m][cat]||0)>0);
+    if(!hasVol)return;
 
-    let points = MONTHS_ORDER.map((m, index) => {
-      const val = historyByMonth[m][cat] || 0;
-      const x = paddingX + stepX * index;
-      const y = paddingY + graphHeight - ((val / globalMax) * graphHeight);
-      return { x, y, value: val };
+    const pts=months.map((m,i)=>{
+      const v=histData[m][cat]||0;
+      const x=pX+(months.length>1?stepX*i:gW/2);
+      const y=pY+gH-(v/globalMax)*gH;
+      return{x,y,v,m};
     });
 
-    // Configurar estilo de la línea
-    const isTotal = cat === 'Total';
-    ctx.strokeStyle = isTotal ? '#ffffff' : COLORS[cat];
-    ctx.lineWidth = isTotal ? 3.5 : 2;
-    if(isTotal) ctx.setLineDash([4, 4]); // Total punteado blanco para denotar jerarquía
-    else ctx.setLineDash([]);
+    const isTotal=cat==="Total";
+    const color=isTotal?"rgba(255,255,255,0.7)":CAT_COLORS[cat];
 
-    // Añadir brillo neon sutil
-    ctx.shadowBlur = 8;
-    ctx.shadowColor = ctx.strokeStyle;
+    // gradient fill
+    if(!isTotal&&pts.length>1){
+      const grad=ctx.createLinearGradient(0,pY,0,pY+gH);
+      grad.addColorStop(0,color+"30");
+      grad.addColorStop(1,color+"00");
+      ctx.beginPath();
+      ctx.moveTo(pts[0].x,pY+gH);
+      pts.forEach((p,i)=>{
+        if(i===0)ctx.lineTo(p.x,p.y);
+        else{const pr=pts[i-1];ctx.bezierCurveTo((pr.x+p.x)/2,pr.y,(pr.x+p.x)/2,p.y,p.x,p.y);}
+      });
+      ctx.lineTo(pts[pts.length-1].x,pY+gH);
+      ctx.closePath();ctx.fillStyle=grad;ctx.fill();
+    }
 
+    // line
     ctx.beginPath();
-    points.forEach((p, idx) => {
-      if(idx === 0) ctx.moveTo(p.x, p.y);
-      else ctx.lineTo(p.x, p.y);
+    ctx.strokeStyle=color;
+    ctx.lineWidth=isTotal?2.5:1.8;
+    if(isTotal)ctx.setLineDash([5,4]);else ctx.setLineDash([]);
+    ctx.shadowBlur=isTotal?0:6;ctx.shadowColor=color;
+    pts.forEach((p,i)=>{
+      if(i===0)ctx.moveTo(p.x,p.y);
+      else{const pr=pts[i-1];ctx.bezierCurveTo((pr.x+p.x)/2,pr.y,(pr.x+p.x)/2,p.y,p.x,p.y);}
     });
-    ctx.stroke();
+    ctx.stroke();ctx.shadowBlur=0;ctx.setLineDash([]);
 
-    // Dibujar pequeños nodos circulares sobre el mes activo
-    ctx.shadowBlur = 0;
-    points.forEach((p, idx) => {
-      if(MONTHS_ORDER[idx] === activeMonth && p.value > 0) {
-        ctx.fillStyle = ctx.strokeStyle;
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
-        ctx.fill();
+    // dots on active month
+    pts.forEach((p,i)=>{
+      if(months[i]===activeMonth&&p.v>0){
+        ctx.beginPath();ctx.arc(p.x,p.y,4,0,Math.PI*2);
+        ctx.fillStyle=color;ctx.fill();
+        // value label
+        ctx.fillStyle=color;ctx.font=`500 10px "IBM Plex Mono",monospace`;
+        ctx.fillText(fmt(p.v),p.x+6,p.y-6);
       }
     });
+
+    legendItems.push({cat,color,isTotal});
   });
+
+  // LEGEND
+  document.getElementById("chartLegend").innerHTML=legendItems.map(({cat,color,isTotal})=>`
+    <div class="chart-legend-item">
+      <div class="chart-legend-line" style="background:${color};${isTotal?'border-top:2px dashed '+color+';background:transparent':''}"></div>
+      <span>${cat}</span>
+    </div>`).join('');
+
+  // TOOLTIP on hover
+  c._pts=histData;
+  c._stepX=stepX;
+  c._pX=pX;c._pY=pY;c._gH=gH;c._globalMax=globalMax;
 }
 
-function updateRecommendation(hhi, top, categories){
-  const icon = document.getElementById('recIcon');
-  const text = document.getElementById('recText');
-  const assetsList = getActiveAssets();
+// Tooltip mouse handler
+function setupLineTooltip(){
+  const c=document.getElementById("lineCanvas");
+  const tt=document.getElementById("chartTooltip");
+  c.addEventListener("mousemove",e=>{
+    if(!c._pts||months.length<1)return;
+    const rect=c.getBoundingClientRect();
+    const mx=e.clientX-rect.left;
+    // find nearest month
+    const stepX=months.length>1?c._stepX:c.getBoundingClientRect().width/2;
+    let best=0;
+    months.forEach((m,i)=>{
+      const x=c._pX+(months.length>1?stepX*i:stepX);
+      if(Math.abs(mx-x)<Math.abs(mx-(c._pX+(months.length>1?stepX*best:stepX))))best=i;
+    });
+    const m=months[best];
+    const d=c._pts[m];
+    const lines=Object.entries(d)
+      .filter(([k,v])=>v>0&&k!=="Total")
+      .sort((a,b)=>b[1]-a[1])
+      .map(([k,v])=>`<span style="color:${CAT_COLORS[k]}">${k}: ${fmt(v)}</span>`)
+      .join('<br/>');
+    tt.innerHTML=`<span style="color:#b4ff5e;font-size:.7rem">${m}</span><br/><span style="color:white">Total: ${fmt(d.Total)}</span><br/>${lines}`;
+    const tx=c._pX+(months.length>1?stepX*best:stepX/2);
+    tt.style.left=(tx+10)+'px';
+    tt.style.top='20px';
+    tt.style.opacity='1';
+  });
+  c.addEventListener("mouseleave",()=>{tt.style.opacity='0';});
+}
 
-  if(!assetsList.length) {
-    icon.textContent = '📊';
-    text.innerHTML = `Línea de tiempo en <strong>${activeMonth}</strong> vacía. Agrega activos o clona el periodo previo.`;
+// ── RECOMMENDATION ────────────────────────────────────
+function updateRec(hhiScore,top,numCats,total,prev,prevTotal){
+  const icon=document.getElementById("recIcon");
+  const text=document.getElementById("recText");
+  if(!total){
+    icon.textContent='📊';
+    text.innerHTML=`Portfolio vacío en <strong>${activeMonth}</strong>. Agrega activos o clona el mes anterior.`;
     return;
   }
+  const trend=prev&&prevTotal>0?((total-prevTotal)/prevTotal*100):null;
+  const trendStr=trend!==null?` El portfolio ${trend>0?'<strong style="color:#b4ff5e">creció':'redujo'} un ${Math.abs(trend).toFixed(1)}% vs ${prev}</strong>.`:'';
 
-  if(hhi > 2500){
-    icon.textContent = '⚠️';
-    text.innerHTML = `Tu portafolio en <strong>${activeMonth}</strong> muestra una <strong>concentración elevada</strong>. El activo de mayor peso es <strong>${top.name}</strong> con un <strong>${top.pct.toFixed(1)}%</strong>. Observa el gráfico de líneas inferior para ver si esta tendencia se ha agudizado desde Enero.`;
-  } else if(hhi > 1500){
-    icon.textContent = '📈';
-    text.innerHTML = `Diversificación equilibrada en <strong>${activeMonth}</strong> con <strong>${categories} sectores</strong> de inversión. El gráfico muestra una evolución saludable. Puedes optimizar incorporando activos defensivos.`;
-  } else {
-    icon.textContent = '✅';
-    text.innerHTML = `Excelente arquitectura en <strong>${activeMonth}</strong>. El portafolio se encuentra <strong>altamente diversificado</strong> en todas sus líneas. Revisa los meses anteriores para verificar tu consistencia histórica.`;
+  if(hhiScore>2500){
+    icon.textContent='⚠️';
+    text.innerHTML=`Concentración <strong>alta</strong> en ${activeMonth}. <strong>${top.name}</strong> representa el <strong>${top.pct.toFixed(1)}%</strong> del total. Considera distribuir hacia ${numCats<3?'más categorías diferentes':'activos de menor correlación'}.${trendStr}`;
+  }else if(hhiScore>1500){
+    icon.textContent='📈';
+    text.innerHTML=`Diversificación <strong>moderada</strong> en ${activeMonth} con ${numCats} sectores. Puedes optimizar añadiendo activos defensivos (Bonos, Cash) para reducir la volatilidad del portafolio.${trendStr}`;
+  }else{
+    icon.textContent='✅';
+    text.innerHTML=`Portafolio <strong>bien diversificado</strong> en ${activeMonth} con ${numCats} sectores y HHI bajo. Mantén la estructura y revisa los meses anteriores para validar consistencia histórica.${trendStr}`;
   }
 }
 
-// Escuchadores globales optimizados para el uso ágil del teclado (Enter en inputs)
-['name', 'value', 'category'].forEach(id => {
-  document.getElementById(id).addEventListener('keydown', e => {
-    if(e.key === 'Enter') addAsset();
-  });
+// ── KEYBOARD SHORTCUTS ────────────────────────────────
+["fName","fVal","fNote","fCat"].forEach(id=>{
+  document.getElementById(id).addEventListener("keydown",e=>{if(e.key==="Enter")addAsset();});
 });
+window.addEventListener("resize",drawLineChart);
 
-// Forzar redibujo responsivo cuando cambie el tamaño de la ventana del navegador
-window.addEventListener('resize', drawLineChart);
-
-// Render inicializador de la app histórica
+// ── BOOT ──────────────────────────────────────────────
+renderTabs();
 render();
+setupLineTooltip();
 </script>
-
 </body>
 </html>
