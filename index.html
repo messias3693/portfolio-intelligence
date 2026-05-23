@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Portfolio Intelligence</title>
+<title>Portfolio Intelligence Pro</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
@@ -49,10 +49,12 @@ header{
   justify-content:space-between;
   align-items:flex-end;
   margin-bottom:28px;
+  flex-wrap: wrap;
+  gap: 15px;
 }
 
 .title h1{
-  font-size:clamp(2rem,5vw,4rem);
+  font-size:clamp(2rem,5vw,3.5rem);
   font-weight:800;
   letter-spacing:-.06em;
 }
@@ -68,6 +70,24 @@ header{
   font-family:'JetBrains Mono',monospace;
   text-transform:uppercase;
   letter-spacing:.12em;
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.month-selector {
+  background: #0d1017;
+  border: 1px solid var(--green);
+  color: var(--green);
+  padding: 8px 16px;
+  border-radius: 999px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+  font-weight: 600;
+  cursor: pointer;
 }
 
 .badge{
@@ -147,6 +167,22 @@ header{
   box-shadow:0 10px 20px rgba(182,255,101,.2);
 }
 
+.btn-clone {
+  background: rgba(91,141,248,.15);
+  border: 1px solid rgba(91,141,248,.3);
+  color: var(--blue);
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.75rem;
+  cursor: pointer;
+  font-family: 'JetBrains Mono', monospace;
+  transition: 0.2s;
+}
+.btn-clone:hover {
+  background: var(--blue);
+  color: #06080d;
+}
+
 .metrics{
   display:grid;
   grid-template-columns:repeat(4,1fr);
@@ -198,6 +234,7 @@ header{
   display:grid;
   grid-template-columns:420px 1fr;
   gap:22px;
+  margin-bottom: 22px;
 }
 
 .card{
@@ -205,6 +242,9 @@ header{
 }
 
 .card-title{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom:22px;
   font-size:.75rem;
   color:var(--muted);
@@ -329,7 +369,7 @@ header{
 }
 
 .table td{
-  padding:18px 0;
+  padding:14px 0;
   border-top:1px solid rgba(255,255,255,.06);
 }
 
@@ -365,6 +405,21 @@ header{
   transition:width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+.input-inline-val {
+  background: #0d1017;
+  border: 1px solid rgba(255,255,255,.08);
+  color: #white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-family: 'JetBrains Mono', monospace;
+  width: 110px;
+  color: white;
+  outline: none;
+}
+.input-inline-val:focus {
+  border-color: var(--green);
+}
+
 .delete{
   width:34px;
   height:34px;
@@ -381,8 +436,23 @@ header{
   border-color:var(--red);
 }
 
+/* Estilos Gráfico de Líneas Histórico */
+.history-card {
+  padding: 26px;
+  margin-bottom: 22px;
+}
+.canvas-line-container {
+  width: 100%;
+  height: 320px;
+  margin-top: 15px;
+  position: relative;
+}
+#lineChart {
+  width: 100%;
+  height: 100%;
+}
+
 .rec{
-  margin-top:22px;
   padding:24px;
   display:flex;
   gap:18px;
@@ -440,11 +510,18 @@ header{
 <header>
   <div class="title">
     <h1>Portfolio<span>Intelligence</span></h1>
-    <p>Sistema avanzado de diversificación y riesgo</p>
+    <p>Sistema avanzado de diversificación y riesgo histórico</p>
   </div>
 
-  <div class="badge">
-    LIVE ENGINE v2.0
+  <div class="header-controls">
+    <select id="monthSelector" class="month-selector" onchange="switchMonth()">
+      <option value="Enero">Mes: Enero</option>
+      <option value="Febrero">Mes: Febrero</option>
+      <option value="Marzo">Mes: Marzo</option>
+      <option value="Abril">Mes: Abril</option>
+      <option value="Mayo" selected>Mes: Mayo</option>
+    </select>
+    <div class="badge">HISTORICAL TIMELINE v3.0</div>
   </div>
 </header>
 
@@ -479,7 +556,7 @@ header{
 
 <div class="metrics">
   <div class="panel metric green">
-    <div class="label">Portfolio</div>
+    <div class="label">Portfolio (Mes actual)</div>
     <div class="value" id="mTotal">$0</div>
     <div class="sub" id="mAssets">0 activos</div>
   </div>
@@ -505,13 +582,13 @@ header{
 
 <div class="grid">
   <div class="panel card">
-    <div class="card-title">Distribución del portafolio</div>
+    <div class="card-title">Distribución del mes</div>
 
     <div id="donutWrap">
       <canvas id="donut" width="280" height="280"></canvas>
       <div class="center">
         <div class="score" id="score">0%</div>
-        <div class="small">portfolio health</div>
+        <div class="small">month health</div>
       </div>
     </div>
 
@@ -530,8 +607,18 @@ header{
   </div>
 
   <div class="panel card">
-    <div class="card-title">Holdings</div>
+    <div class="card-title">
+      <span>Holdings del Mes</span>
+      <button class="btn-clone" onclick="clonePreviousMonth()">📋 Clonar mes anterior</button>
+    </div>
     <div id="tableWrap"></div>
+  </div>
+</div>
+
+<div class="panel history-card">
+  <div class="card-title">Crecimiento evolutivo de inversiones (Enero - Mayo)</div>
+  <div class="canvas-line-container">
+    <canvas id="lineChart"></canvas>
   </div>
 </div>
 
@@ -553,17 +640,55 @@ const COLORS = {
   "Real Estate":"#ff6fa7"
 };
 
-// Historial del estado métrico para animaciones fluidas relativas
-let metricState = {
-  total: 0,
-  diversification: 0,
-  hhi: 0
+const MONTHS_ORDER = ["Enero", "Febrero", "Marzo", "Abril", "Mayo"];
+
+// Datos semilla/historial realista precargado por si el LocalStorage está virgen
+const SEED_DATA = {
+  "Enero": [
+    { id: 1, name: "AAPL", category: "Acciones", value: 8000 },
+    { id: 2, name: "BTC", category: "Crypto", value: 4000 },
+    { id: 3, name: "QQQ", category: "ETF", value: 6000 }
+  ],
+  "Febrero": [
+    { id: 1, name: "AAPL", category: "Acciones", value: 8500 },
+    { id: 2, name: "BTC", category: "Crypto", value: 5200 },
+    { id: 3, name: "QQQ", category: "ETF", value: 6100 }
+  ],
+  "Marzo": [
+    { id: 1, name: "AAPL", category: "Acciones", value: 7900 },
+    { id: 2, name: "BTC", category: "Crypto", value: 3900 },
+    { id: 3, name: "QQQ", category: "ETF", value: 6400 }
+  ],
+  "Abril": [
+    { id: 1, name: "AAPL", category: "Acciones", value: 9200 },
+    { id: 2, name: "BTC", category: "Crypto", value: 7100 },
+    { id: 3, name: "QQQ", category: "ETF", value: 7000 }
+  ],
+  "Mayo": [
+    { id: 1, name: "AAPL", category: "Acciones", value: 11000 },
+    { id: 2, name: "BTC", category: "Crypto", value: 9500 },
+    { id: 3, name: "QQQ", category: "ETF", value: 7800 }
+  ]
 };
 
-let assets = JSON.parse(localStorage.getItem("portfolio_assets") || "[]");
+// Cargar del almacenamiento o usar el objeto histórico predeterminado
+let historicalWallet = JSON.parse(localStorage.getItem("portfolio_historical_wallet"));
+if(!historicalWallet || Object.keys(historicalWallet).length === 0) {
+  historicalWallet = SEED_DATA;
+  localStorage.setItem("portfolio_historical_wallet", JSON.stringify(historicalWallet));
+}
+
+let activeMonth = document.getElementById('monthSelector').value;
+
+let metricState = { total: 0, diversification: 0, hhi: 0 };
 
 function save(){
-  localStorage.setItem("portfolio_assets", JSON.stringify(assets));
+  localStorage.setItem("portfolio_historical_wallet", JSON.stringify(historicalWallet));
+}
+
+function getActiveAssets() {
+  if(!historicalWallet[activeMonth]) historicalWallet[activeMonth] = [];
+  return historicalWallet[activeMonth];
 }
 
 function fmt(v){
@@ -574,22 +699,60 @@ function fmt(v){
 
 function animateNumber(el, start, end, formatter) {
   let startTime = null;
-  const duration = 600; 
+  const duration = 500; 
 
   function update(t){
     if(!startTime) startTime = t;
     const progress = Math.min((t - startTime) / duration, 1);
-    // Easing out cuadrático para mayor suavidad orgánica
     const ease = progress * (2 - progress); 
     const val = start + (end - start) * ease;
-
     el.textContent = formatter ? formatter(val) : Math.round(val);
-
-    if(progress < 1) {
-      requestAnimationFrame(update);
-    }
+    if(progress < 1) requestAnimationFrame(update);
   }
   requestAnimationFrame(update);
+}
+
+function switchMonth() {
+  activeMonth = document.getElementById('monthSelector').value;
+  render();
+}
+
+function clonePreviousMonth() {
+  const currentIndex = MONTHS_ORDER.indexOf(activeMonth);
+  if(currentIndex === 0) {
+    alert("Enero es el primer mes, no hay un historial anterior que clonar.");
+    return;
+  }
+  const prevMonthName = MONTHS_ORDER[currentIndex - 1];
+  const prevMonthAssets = historicalWallet[prevMonthName] || [];
+
+  if(prevMonthAssets.length === 0) {
+    alert(`El mes de ${prevMonthName} está vacío.`);
+    return;
+  }
+
+  // Clonar profundamente modificando los ID de tiempo para evitar duplicados críticos
+  historicalWallet[activeMonth] = prevMonthAssets.map(a => ({
+    ...a,
+    id: Date.now() + Math.random()
+  }));
+
+  save();
+  render();
+}
+
+function updateInlineValue(id, valueString) {
+  const parsedVal = parseFloat(valueString);
+  if(isNaN(parsedVal) || parsedVal < 0) return;
+
+  const currentAssets = getActiveAssets();
+  const asset = currentAssets.find(a => a.id === id);
+  if(asset) {
+    asset.value = parsedVal;
+    save();
+    // Renderizado silencioso que actualiza canvas e histórico sin romper el foco del input
+    renderCalculationsOnly();
+  }
 }
 
 function addAsset(){
@@ -602,7 +765,9 @@ function addAsset(){
 
   if(!name || !value || value <= 0) return;
 
-  assets.push({
+  if(!historicalWallet[activeMonth]) historicalWallet[activeMonth] = [];
+  
+  historicalWallet[activeMonth].push({
     id: Date.now(),
     name,
     category,
@@ -613,94 +778,41 @@ function addAsset(){
 
   nameInput.value = '';
   valInput.value = '';
-  nameInput.focus(); // Retorna el cursor automáticamente para UX veloz
+  nameInput.focus();
 
   render();
 }
 
 function removeAsset(id){
-  assets = assets.filter(a => a.id !== id);
+  historicalWallet[activeMonth] = getActiveAssets().filter(a => a.id !== id);
   save();
   render();
 }
 
+// Render estructural completo
 function render(){
   const tableWrap = document.getElementById('tableWrap');
+  const assetsList = getActiveAssets();
 
-  if(!assets.length){
-    tableWrap.innerHTML = `<div class="empty">Sin posiciones todavía.</div>`;
-    
-    // Animación de regreso a cero limpio
-    animateNumber(document.getElementById('mTotal'), metricState.total, 0, fmt);
-    animateNumber(document.getElementById('mDiversification'), metricState.diversification, 0, v => Math.round(v) + '%');
-    animateNumber(document.getElementById('score'), metricState.diversification, 0, v => Math.round(v) + '%');
-    animateNumber(document.getElementById('mHHI'), metricState.hhi, 0);
-
-    document.getElementById('mAssets').textContent = '0 activos';
-    document.getElementById('mTop').textContent = '—';
-    document.getElementById('mTopName').textContent = '—';
-    document.getElementById('mHHILabel').textContent = 'concentración';
-    document.getElementById('hhiFill').style.width = '0%';
-    document.getElementById('legend').innerHTML = '';
-    
-    metricState = { total: 0, diversification: 0, hhi: 0 };
-    drawDonut([]);
-    updateRecommendation(0, null, 0);
+  if(!assetsList.length){
+    tableWrap.innerHTML = `<div class="empty">Sin posiciones registradas en ${activeMonth}. Prueba usar el botón de clonar.</div>`;
+    renderCalculationsOnly();
     return;
   }
-
-  const total = assets.reduce((s,a)=>s+a.value,0);
-
-  const enriched = assets.map(a=>({
-    ...a,
-    pct:(a.value/total)*100
-  }))
-  .sort((a,b)=>b.pct-a.pct);
-
-  const categories = {};
-  enriched.forEach(a=>{
-    categories[a.category] = (categories[a.category] || 0) + a.pct;
-  });
-
-  const catArr = Object.entries(categories);
-  const hhi = enriched.reduce((s,a)=> s + Math.pow(a.pct/100,2), 0);
-  const diversification = Math.round((1-hhi)*100);
-  const hhiScore = Math.round(hhi * 10000);
-
-  // Ejecución de contadores animados fluidos desde el estado anterior
-  animateNumber(document.getElementById('mTotal'), metricState.total, total, fmt);
-  animateNumber(document.getElementById('mDiversification'), metricState.diversification, diversification, v => Math.round(v) + '%');
-  animateNumber(document.getElementById('score'), metricState.diversification, diversification, v => Math.round(v) + '%');
-  animateNumber(document.getElementById('mHHI'), metricState.hhi, hhiScore);
-
-  // Guardar estado actual para la siguiente interacción
-  metricState = { total, diversification, hhi: hhiScore };
-
-  document.getElementById('mAssets').textContent = enriched.length + (enriched.length === 1 ? ' activo' : ' activos');
-  document.getElementById('mTop').textContent = enriched[0].pct.toFixed(1) + '%';
-  document.getElementById('mTopName').textContent = enriched[0].name;
-
-  document.getElementById('mHHILabel').textContent =
-    hhiScore < 1500 ? 'diversificado' : hhiScore < 2500 ? 'moderado' : 'concentrado';
-
-  document.getElementById('hhiFill').style.width = Math.min(hhi * 100, 100) + '%';
-
-  drawDonut(catArr);
-  renderLegend(catArr);
 
   tableWrap.innerHTML = `
     <table class="table">
       <thead>
         <tr>
           <th>Activo</th>
-          <th>Valor</th>
+          <th>Valor ($)</th>
           <th>%</th>
           <th>Distribución</th>
           <th></th>
         </tr>
       </thead>
       <tbody>
-        ${enriched.map(a=>`
+        ${assetsList.map(a=>`
           <tr>
             <td>
               <div class="asset">
@@ -710,11 +822,13 @@ function render(){
                 </div>
               </div>
             </td>
-            <td>${fmt(a.value)}</td>
-            <td style="color:${COLORS[a.category]}; font-weight:600;">${a.pct.toFixed(1)}%</td>
-            <td style="width:180px">
+            <td>
+              <input type="number" class="input-inline-val" value="${a.value}" oninput="updateInlineValue(${a.id}, this.value)" />
+            </td>
+            <td id="pct-${a.id}" style="color:${COLORS[a.category]}; font-weight:600;">0%</td>
+            <td style="width:140px">
               <div class="bar">
-                <div class="bar-fill" style="width:${a.pct}%; background:${COLORS[a.category]}"></div>
+                <div id="bar-${a.id}" class="bar-fill" style="width:0%; background:${COLORS[a.category]}"></div>
               </div>
             </td>
             <td>
@@ -726,7 +840,59 @@ function render(){
     </table>
   `;
 
+  renderCalculationsOnly();
+}
+
+// Ejecuta la matemática pura y redibuja los dos canvas coordinadamente
+function renderCalculationsOnly() {
+  const assetsList = getActiveAssets();
+  const total = assetsList.reduce((s,a)=>s+a.value,0);
+
+  const enriched = assetsList.map(a=>({
+    ...a,
+    pct: total > 0 ? (a.value/total)*100 : 0
+  })).sort((a,b)=>b.pct-a.pct);
+
+  // Actualizar indicadores visuales de porcentaje en la tabla viva
+  enriched.forEach(a => {
+    const pctEl = document.getElementById(`pct-${a.id}`);
+    const barEl = document.getElementById(`bar-${a.id}`);
+    if(pctEl) pctEl.textContent = a.pct.toFixed(1) + '%';
+    if(barEl) barEl.style.width = a.pct + '%';
+  });
+
+  const categories = {};
+  enriched.forEach(a=>{
+    categories[a.category] = (categories[a.category] || 0) + a.pct;
+  });
+
+  const catArr = Object.entries(categories);
+  const hhi = enriched.reduce((s,a)=> s + Math.pow(a.pct/100,2), 0);
+  const diversification = total > 0 ? Math.round((1-hhi)*100) : 0;
+  const hhiScore = total > 0 ? Math.round(hhi * 10000) : 0;
+
+  animateNumber(document.getElementById('mTotal'), metricState.total, total, fmt);
+  animateNumber(document.getElementById('mDiversification'), metricState.diversification, diversification, v => Math.round(v) + '%');
+  animateNumber(document.getElementById('score'), metricState.diversification, diversification, v => Math.round(v) + '%');
+  animateNumber(document.getElementById('mHHI'), metricState.hhi, hhiScore);
+
+  metricState = { total, diversification, hhi: hhiScore };
+
+  document.getElementById('mAssets').textContent = enriched.length + (enriched.length === 1 ? ' activo' : ' activos');
+  document.getElementById('mTop').textContent = enriched.length ? enriched[0].pct.toFixed(1) + '%' : '—';
+  document.getElementById('mTopName').textContent = enriched.length ? enriched[0].name : '—';
+
+  document.getElementById('mHHILabel').textContent =
+    total === 0 ? 'concentración' : hhiScore < 1500 ? 'diversificado' : hhiScore < 2500 ? 'moderado' : 'concentrado';
+
+  document.getElementById('hhiFill').style.width = Math.min(hhi * 100, 100) + '%';
+
+  drawDonut(catArr);
+  renderLegend(catArr);
   updateRecommendation(hhiScore, enriched[0], catArr.length);
+  
+  // ¡Redibujar el motor del gráfico de líneas históricas!
+  drawLineChart();
 }
 
 function renderLegend(cats){
@@ -743,8 +909,6 @@ function drawDonut(cats){
   const canvas = document.getElementById('donut');
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0,0,280,280);
-
-  // Forzar limpieza absoluta de herencia de sombras previas
   ctx.shadowBlur = 0;
   ctx.shadowColor = 'transparent';
 
@@ -762,45 +926,161 @@ function drawDonut(cats){
 
   cats.forEach(([name,pct])=>{
     const angle = (pct/100)*(Math.PI*2);
-
     ctx.beginPath();
     ctx.strokeStyle = COLORS[name];
     ctx.lineWidth = 24;
-    
-    // Ajuste de línea: evita cortes feos si solo hay una categoría asignada
     ctx.lineCap = totalSegments > 1 ? 'round' : 'butt';
-
     ctx.shadowBlur = 14;
     ctx.shadowColor = COLORS[name];
-
-    // Compensación milimétrica del arco para armonizar los bordes redondeados nativos del canvas
     const endAngle = start + angle;
     ctx.arc(140, 140, 95, start, totalSegments > 1 ? endAngle - 0.03 : endAngle);
     ctx.stroke();
-
     start += angle;
+  });
+}
+
+// MOTOR ALGEBRAICO GRÁFICO: Dibuja líneas de tendencia mensuales personalizadas por categoría
+function drawLineChart() {
+  const canvas = document.getElementById('lineChart');
+  if(!canvas) return;
+  const ctx = canvas.getContext('2d');
+  
+  // Escalar responsivamente el Canvas interno al contenedor real CSS
+  const rect = canvas.parentNode.getBoundingClientRect();
+  canvas.width = rect.width * window.devicePixelRatio;
+  canvas.height = 320 * window.devicePixelRatio;
+  ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+  ctx.clearRect(0, 0, rect.width, 320);
+  ctx.shadowBlur = 0;
+  ctx.shadowColor = 'transparent';
+
+  // 1. Recopilar datos históricos estructurados de todas las categorías + total general
+  let historyByMonth = {}; 
+  let globalMax = 2000; // Umbral base de altura
+
+  MONTHS_ORDER.forEach(m => {
+    historyByMonth[m] = { Total: 0 };
+    // Inicializar las categorías conocidas a cero
+    Object.keys(COLORS).forEach(c => historyByMonth[m][c] = 0);
+
+    const monthAssets = historicalWallet[m] || [];
+    monthAssets.forEach(a => {
+      historyByMonth[m][a.category] = (historyByMonth[m][a.category] || 0) + a.value;
+      historyByMonth[m].Total += a.value;
+    });
+
+    if(historyByMonth[m].Total > globalMax) globalMax = historyByMonth[m].Total;
+  });
+
+  // Márgenes internos de la retícula matemática
+  const paddingX = 65;
+  const paddingY = 40;
+  const graphWidth = rect.width - paddingX - 30;
+  const graphHeight = 320 - paddingY - 40;
+
+  // 2. Dibujar líneas guía de fondo y escala monetaria Y
+  ctx.strokeStyle = 'rgba(255, 255, 255, 0.04)';
+  ctx.lineWidth = 1;
+  ctx.fillStyle = 'var(--muted)';
+  ctx.font = '10px "JetBrains Mono", monospace';
+  
+  const gridLines = 4;
+  for (let i = 0; i <= gridLines; i++) {
+    const y = paddingY + (graphHeight / gridLines) * i;
+    const valueLabel = globalMax - ((globalMax / gridLines) * i);
+    
+    ctx.beginPath();
+    ctx.moveTo(paddingX, y);
+    ctx.lineTo(paddingX + graphWidth, y);
+    ctx.stroke();
+    
+    ctx.fillText(fmt(valueLabel), 10, y + 4);
+  }
+
+  // 3. Dibujar etiquetas de meses X
+  const stepX = graphWidth / (MONTHS_ORDER.length - 1);
+  MONTHS_ORDER.forEach((m, index) => {
+    const x = paddingX + stepX * index;
+    ctx.fillStyle = (m === activeMonth) ? 'var(--green)' : 'var(--muted)';
+    ctx.fillText(m, x - 15, 320 - 15);
+    
+    // Línea vertical punteada tenue para el mes activo
+    if(m === activeMonth) {
+      ctx.strokeStyle = 'rgba(182, 255, 101, 0.15)';
+      ctx.beginPath();
+      ctx.moveTo(x, paddingY);
+      ctx.lineTo(x, paddingY + graphHeight);
+      ctx.stroke();
+    }
+  });
+
+  // 4. Graficar de forma independiente cada línea de color por categoría activa
+  const categoriesToPlot = ['Total', ...Object.keys(COLORS)];
+
+  categoriesToPlot.forEach(cat => {
+    // Comprobar si la categoría tiene saldo o registros reales para no pintar líneas vacías en el piso
+    let hasVolume = MONTHS_ORDER.some(m => historyByMonth[m][cat] > 0);
+    if(!hasVolume) return;
+
+    let points = MONTHS_ORDER.map((m, index) => {
+      const val = historyByMonth[m][cat] || 0;
+      const x = paddingX + stepX * index;
+      const y = paddingY + graphHeight - ((val / globalMax) * graphHeight);
+      return { x, y, value: val };
+    });
+
+    // Configurar estilo de la línea
+    const isTotal = cat === 'Total';
+    ctx.strokeStyle = isTotal ? '#ffffff' : COLORS[cat];
+    ctx.lineWidth = isTotal ? 3.5 : 2;
+    if(isTotal) ctx.setLineDash([4, 4]); // Total punteado blanco para denotar jerarquía
+    else ctx.setLineDash([]);
+
+    // Añadir brillo neon sutil
+    ctx.shadowBlur = 8;
+    ctx.shadowColor = ctx.strokeStyle;
+
+    ctx.beginPath();
+    points.forEach((p, idx) => {
+      if(idx === 0) ctx.moveTo(p.x, p.y);
+      else ctx.lineTo(p.x, p.y);
+    });
+    ctx.stroke();
+
+    // Dibujar pequeños nodos circulares sobre el mes activo
+    ctx.shadowBlur = 0;
+    points.forEach((p, idx) => {
+      if(MONTHS_ORDER[idx] === activeMonth && p.value > 0) {
+        ctx.fillStyle = ctx.strokeStyle;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+    });
   });
 }
 
 function updateRecommendation(hhi, top, categories){
   const icon = document.getElementById('recIcon');
   const text = document.getElementById('recText');
+  const assetsList = getActiveAssets();
 
-  if(!assets.length) {
+  if(!assetsList.length) {
     icon.textContent = '📊';
-    text.innerHTML = 'Agrega activos para comenzar.';
+    text.innerHTML = `Línea de tiempo en <strong>${activeMonth}</strong> vacía. Agrega activos o clona el periodo previo.`;
     return;
   }
 
   if(hhi > 2500){
     icon.textContent = '⚠️';
-    text.innerHTML = `Tu portafolio muestra una <strong>concentración elevada</strong>. El activo de mayor peso es <strong>${top.name}</strong> con un <strong>${top.pct.toFixed(1)}%</strong>. Considera rebalancear distribuyendo capital hacia otras categorías para mitigar riesgos sistémicos.`;
+    text.innerHTML = `Tu portafolio en <strong>${activeMonth}</strong> muestra una <strong>concentración elevada</strong>. El activo de mayor peso es <strong>${top.name}</strong> con un <strong>${top.pct.toFixed(1)}%</strong>. Observa el gráfico de líneas inferior para ver si esta tendencia se ha agudizado desde Enero.`;
   } else if(hhi > 1500){
     icon.textContent = '📈';
-    text.innerHTML = `El portafolio tiene una <strong>diversificación moderada</strong> distribuida en <strong>${categories} sectores</strong>. Tienes una estructura relativamente sana, podrías optimizar incorporando activos defensivos de baja correlación como Bonos o Cash.`;
+    text.innerHTML = `Diversificación equilibrada en <strong>${activeMonth}</strong> con <strong>${categories} sectores</strong> de inversión. El gráfico muestra una evolución saludable. Puedes optimizar incorporando activos defensivos.`;
   } else {
     icon.textContent = '✅';
-    text.innerHTML = `Excelente arquitectura de inversión. El portafolio se encuentra <strong>altamente diversificado</strong> a lo largo de <strong>${categories} categorías</strong> estratégicas. Mantén revisiones periódicas para mitigar desviaciones orgánicas de precio.`;
+    text.innerHTML = `Excelente arquitectura en <strong>${activeMonth}</strong>. El portafolio se encuentra <strong>altamente diversificado</strong> en todas sus líneas. Revisa los meses anteriores para verificar tu consistencia histórica.`;
   }
 }
 
@@ -811,7 +1091,10 @@ function updateRecommendation(hhi, top, categories){
   });
 });
 
-// Render inicializador
+// Forzar redibujo responsivo cuando cambie el tamaño de la ventana del navegador
+window.addEventListener('resize', drawLineChart);
+
+// Render inicializador de la app histórica
 render();
 </script>
 
