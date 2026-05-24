@@ -39,7 +39,7 @@
   height: 100vh;
   z-index: -1;
   pointer-events: none;
-  opacity: 0.05; /* Nivel sutil para no interferir con la lectura */
+  opacity: 0.06; /* Nivel sutil y elegante */
 }
 
 body{
@@ -161,7 +161,6 @@ table.tbl td{padding:10px 0;border-top:1px solid rgba(255,255,255,.04);}
 <canvas id="waterfallCanvas"></canvas>
 
 <div id="toastArea"></div>
-<div id="modalContainer"></div>
 
 <div class="container">
 
@@ -317,17 +316,16 @@ const wCtx = wCanvas.getContext('2d');
 let wWidth = wCanvas.width = window.innerWidth;
 let wHeight = wCanvas.height = window.innerHeight;
 
-// Símbolos temáticos del nicho financiero del canal Alpha Analyst
 const financialChars = ['$', '₿', 'Ξ', '%', '↑', '↓', '7', '9', '0', '1', '▲', '▼', '📊', '📈', 'X', 'M'];
 const wFontSize = 14;
 let wColumns = Math.floor(wWidth / wFontSize);
 const wDrops = Array(wColumns).fill(1);
 
 function drawWaterfall() {
-  wCtx.fillStyle = 'rgba(5, 7, 15, 0.05)'; // Coincide con var(--bg) para generar estela
+  wCtx.fillStyle = 'rgba(5, 7, 15, 0.05)';
   wCtx.fillRect(0, 0, wWidth, wHeight);
   
-  wCtx.fillStyle = '#b4ff5e'; // Coincide con var(--green)
+  wCtx.fillStyle = '#b4ff5e'; // Verde brillante nativo
   wCtx.font = wFontSize + 'px "JetBrains Mono", monospace';
   
   for (let i = 0; i < wDrops.length; i++) {
@@ -477,7 +475,7 @@ function clonePrev(){
   toast(`Estructura clonada de ${months[idx-1]}`);
 }
 
-// ── RENDERIZADO GENERAL Y CÁLCULOS BIOMÉTRICOS ──
+// ── RENDERIZADO GENERAL Y CÁLCULOS ──
 function render(){
   document.getElementById("activeMonthLabel").textContent = activeMonth;
   const assets = wallet[activeMonth] || [];
@@ -505,7 +503,6 @@ function renderCalculationsOnly(){
   
   document.getElementById("mTotal").textContent = fmt(total);
   
-  // Procesar porcentajes y sectores
   const sectorTotals = {};
   assets.forEach(a => {
     const pct = total > 0 ? (a.value / total) * 100 : 0;
@@ -514,7 +511,6 @@ function renderCalculationsOnly(){
     sectorTotals[a.category] = (sectorTotals[a.category] || 0) + a.value;
   });
 
-  // HHI Cálculo de concentración
   let hhiSum = 0;
   let maxAssetPct = 0;
   let maxAssetName = "Ninguno";
@@ -540,7 +536,6 @@ function renderCalculationsOnly(){
   hhiLabel.textContent = hhiType;
   hhiLabel.style.color = hhiColor;
 
-  // Ajustar indicadores superiores
   document.getElementById("mTop").textContent = maxAssetPct.toFixed(1) + '%';
   document.getElementById("mTopName").textContent = maxAssetName;
   
@@ -551,7 +546,6 @@ function renderCalculationsOnly(){
   const peakPct = total > 0 ? ((total / HIST_PEAK) * 100).toFixed(0) + '%' : '0%';
   document.getElementById("mPeak").textContent = peakPct;
 
-  // Renderizar Barras Laterales por Categoría
   const sectorBars = document.getElementById("sectorBars");
   const sortedSectors = Object.entries(sectorTotals).sort((a,b) => b[1] - a[1]);
   
@@ -570,7 +564,6 @@ function renderCalculationsOnly(){
     }).join('');
   }
 
-  // Análisis de inteligencia dinámico para Alpha Analyst
   const recText = document.getElementById("recText");
   if(total === 0){
     recText.textContent = "Agrega activos para generar una recomendación automatizada del portafolio actual.";
@@ -585,24 +578,22 @@ function renderCalculationsOnly(){
   drawHistoryLine();
 }
 
-// ── CANVASES DE GRÁFICOS DINÁMICOS ──
+// ── CORRECCIÓN DE COLORES EN CANVAS DE GRÁFICOS ──
 function drawDonut(score){
   const canvas = document.getElementById("donutCanvas");
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0,0,180,180);
   
-  // Fondo de dona
   ctx.beginPath();
   ctx.arc(90,90,75,0,2*Math.PI);
   ctx.strokeStyle = "rgba(255,255,255,0.03)";
   ctx.lineWidth = 14;
   ctx.stroke();
   
-  // Arco de Score
   const endAngle = (score / 100) * (2 * Math.PI) - (Math.PI / 2);
   ctx.beginPath();
   ctx.arc(90,90,75, -Math.PI/2, endAngle);
-  ctx.strokeStyle = "var(--green)";
+  ctx.strokeStyle = "#b4ff5e"; // Solucionado: Color Hex directo
   ctx.lineWidth = 14;
   ctx.lineCap = "round";
   ctx.stroke();
@@ -613,20 +604,18 @@ function drawGauge(hhi){
   const ctx = canvas.getContext("2d");
   ctx.clearRect(0,0,150,75);
   
-  // Fondo del semicírculo
   ctx.beginPath();
   ctx.arc(75,70,55, Math.PI, 2*Math.PI);
   ctx.strokeStyle = "rgba(255,255,255,0.04)";
   ctx.lineWidth = 10;
   ctx.stroke();
   
-  // Llenado proporcional
   const pct = Math.min(1, hhi / 5000);
   const targetAngle = Math.PI + (pct * Math.PI);
   
   ctx.beginPath();
   ctx.arc(75,70,55, Math.PI, targetAngle);
-  ctx.strokeStyle = hhi > 2500 ? "var(--red)" : hhi > 1500 ? "var(--orange)" : "var(--green)";
+  ctx.strokeStyle = hhi > 2500 ? "#ff4d6d" : hhi > 1500 ? "#f5a623" : "#b4ff5e"; // Solucionado: Colores Nativo Hex
   ctx.lineWidth = 10;
   ctx.lineCap = "round";
   ctx.stroke();
@@ -641,12 +630,11 @@ function drawHistoryLine(){
   const ctx = canvas.getContext("2d");
   
   const rect = canvas.parentNode.getBoundingClientRect();
-  canvas.width = rect.width;
+  canvas.width = rect.width || 800; // Respaldo si no calcula ancho
   canvas.height = 260;
   
   ctx.clearRect(0,0,canvas.width,canvas.height);
   
-  // Obtener totales históricos de los meses configurados
   const points = months.map(m => {
     const list = wallet[m] || [];
     return list.reduce((acc, curr) => acc + curr.value, 0);
@@ -657,7 +645,6 @@ function drawHistoryLine(){
   const graphWidth = canvas.width - (padding * 2);
   const graphHeight = canvas.height - (padding * 2);
   
-  // Dibujar líneas guía horizontales
   ctx.strokeStyle = "rgba(255,255,255,0.02)";
   ctx.lineWidth = 1;
   for(let i=0; i<=4; i++){
@@ -668,14 +655,14 @@ function drawHistoryLine(){
     ctx.stroke();
   }
   
-  // Mapear coordenadas de los puntos
+  // Solucionado: Evita divisiones por cero si hay solo 1 mes
+  const divisor = months.length > 1 ? months.length - 1 : 1;
   const coords = points.map((p, i) => {
-    const x = padding + (i * (graphWidth / (months.length - 1)));
+    const x = padding + (i * (graphWidth / divisor));
     const y = padding + graphHeight - ((p / maxVal) * graphHeight);
     return {x, y, val: p};
   });
   
-  // Dibujar curva suavizada del rendimiento
   if(coords.length > 1){
     ctx.beginPath();
     ctx.moveTo(coords[0].x, coords[0].y);
@@ -685,11 +672,10 @@ function drawHistoryLine(){
       ctx.quadraticCurveTo(coords[i].x, coords[i].y, xc, yc);
     }
     ctx.lineTo(coords[coords.length-1].x, coords[coords.length-1].y);
-    ctx.strokeStyle = "var(--blue)";
+    ctx.strokeStyle = "#5b8df8"; // Solucionado: Color Azul Hex directo
     ctx.lineWidth = 3;
     ctx.stroke();
     
-    // Relleno gradiente bajo la línea
     const gradient = ctx.createLinearGradient(0, padding, 0, canvas.height - padding);
     gradient.addColorStop(0, "rgba(91, 141, 248, 0.15)");
     gradient.addColorStop(1, "rgba(91, 141, 248, 0)");
@@ -700,22 +686,19 @@ function drawHistoryLine(){
     ctx.fill();
   }
   
-  // Pintar nodos de datos y texto de meses
   coords.forEach((c, idx) => {
     ctx.beginPath();
     ctx.arc(c.x, c.y, 4, 0, 2*Math.PI);
-    ctx.fillStyle = activeMonth === months[idx] ? "var(--green)" : "var(--text)";
+    ctx.fillStyle = activeMonth === months[idx] ? "#b4ff5e" : "#e8ecff"; // Solucionado: Hex directos
     ctx.fill();
     
-    // Nombre del mes abajo
-    ctx.fillStyle = "var(--muted2)";
+    ctx.fillStyle = "#7d87a6"; // Solucionado: Muted Hex directo
     ctx.font = "9px 'JetBrains Mono'";
     ctx.textAlign = "center";
     ctx.fillText(months[idx], c.x, canvas.height - 15);
   });
 }
 
-// Inicialización de la consola al cargar
 window.onload = () => {
   renderTabs();
   render();
