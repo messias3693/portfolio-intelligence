@@ -1,952 +1,245 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Portfolio Intelligence Pro · Alpha Analyst</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet"/>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#05070f;
-  --bg2:#080b17;
-  --card:rgba(12,15,26,0.92);
-  --border:rgba(255,255,255,0.05);
-  --border2:rgba(255,255,255,0.1);
-  --text:#e8ecff;
-  --muted:#505876;
-  --muted2:#7d87a6;
-  --green:#b4ff5e;
-  --green-d:rgba(180,255,94,0.1);
-  --blue:#5b8df8;
-  --blue-d:rgba(91,141,248,0.1);
-  --orange:#f5a623;
-  --red:#ff4d6d;
-  --purple:#9d7fea;
-  --teal:#3dd9c5;
-  --gold:#ffd166;
-  --font-h:'Space Grotesk',sans-serif;
-  --font-m:'JetBrains Mono',monospace;
-  --font-b:'Manrope',sans-serif;
-}
-
-body{
-  min-height:100vh;
-  background:var(--bg);
-  background-image:
-    radial-gradient(ellipse 70% 40% at 5% 0%,rgba(91,141,248,0.09) 0%,transparent 60%),
-    radial-gradient(ellipse 50% 35% at 95% 95%,rgba(180,255,94,0.07) 0%,transparent 55%);
-  color:var(--text);
-  font-family:var(--font-b);
-  padding:34px 20px 0;
-  font-size:14px;
-  line-height:1.5;
-}
-.container{max-width:1360px;margin:auto;}
-
-/* ── TOAST ── */
-#toastArea{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px;}
-.toast{padding:11px 18px;border-radius:12px;font-size:.78rem;font-family:var(--font-m);
-  backdrop-filter:blur(12px);animation:toastIn .3s ease;border:1px solid var(--border2);}
-.toast.ok{background:rgba(180,255,94,.14);color:var(--green);border-color:rgba(180,255,94,.3);}
-.toast.err{background:rgba(255,77,109,.14);color:var(--red);border-color:rgba(255,77,109,.3);}
-.toast.info{background:rgba(91,141,248,.14);color:var(--blue);border-color:rgba(91,141,248,.3);}
-@keyframes toastIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
-
-/* ── HEADER ── */
-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;flex-wrap:wrap;gap:16px;}
-.title{}
-.title-top{display:flex;align-items:center;gap:14px;}
-.title h1{font-family:var(--font-h);font-size:clamp(1.9rem,4.5vw,3rem);font-weight:800;letter-spacing:-.05em;line-height:1;}
-.title h1 span{color:var(--green);}
-.title-faith{margin-top:7px;font-size:.72rem;color:rgba(180,255,94,.65);font-family:var(--font-m);letter-spacing:.18em;text-transform:uppercase;}
-.alpha-badge{padding:5px 12px;border-radius:999px;background:rgba(91,141,248,.12);border:1px solid rgba(91,141,248,.25);font-size:.65rem;font-family:var(--font-m);color:var(--blue);letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;align-self:flex-start;margin-top:4px;}
-
-.header-right{display:flex;flex-direction:column;align-items:flex-end;gap:10px;}
-.social-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end;}
-.social-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:10px;font-size:.73rem;font-family:var(--font-m);font-weight:500;text-decoration:none;border:1px solid;transition:.2s;cursor:pointer;background:transparent;}
-.social-btn:hover{transform:translateY(-2px);}
-.social-btn.wa{color:#25D366;border-color:rgba(37,211,102,.3);background:rgba(37,211,102,.08);}
-.social-btn.wa:hover{background:rgba(37,211,102,.18);}
-.social-btn.tt{color:#ff2d55;border-color:rgba(255,45,85,.3);background:rgba(255,45,85,.08);}
-.social-btn.tt:hover{background:rgba(255,45,85,.18);}
-.icon-btn{width:34px;height:34px;border-radius:9px;border:1px solid var(--border2);background:transparent;color:var(--muted2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.9rem;transition:.2s;}
-.icon-btn:hover{color:var(--text);background:rgba(255,255,255,.06);}
-.actions-row{display:flex;gap:8px;}
-
-.month-tabs{display:flex;gap:6px;align-items:center;flex-wrap:wrap;}
-.month-tab-wrapper{display:inline-flex;align-items:center;background:transparent;border:1px solid var(--border2);border-radius:999px;padding-right:6px;transition:.2s;}
-.month-tab-wrapper.active{background:var(--green-d);border-color:rgba(180,255,94,.5);}
-.month-tab{padding:6px 8px 6px 13px;border:none;background:transparent;font-size:.68rem;cursor:pointer;font-family:var(--font-m);font-weight:500;color:var(--muted2);outline:none;}
-.month-tab-wrapper.active .month-tab{color:var(--green);}
-.month-tab-wrapper:hover{border-color:var(--blue);}
-.month-tab-wrapper.active:hover{border-color:rgba(180,255,94,.8);}
-.btn-del-month{background:transparent;border:none;color:var(--muted);cursor:pointer;font-size:10px;padding:2px 4px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:.2s;}
-.btn-del-month:hover{color:var(--red);background:rgba(255,77,109,0.15);}
-.month-tab.add-m{border:1px dashed var(--border2);border-radius:999px;padding:6px 13px;color:var(--muted);}
-.month-tab.add-m:hover{border-color:var(--green);color:var(--green);background:transparent;}
-
-/* ── PANEL / CARD ── */
-.panel{background:var(--card);border:1px solid var(--border);backdrop-filter:blur(20px);border-radius:20px;box-shadow:0 6px 28px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.022);}
-.card{padding:22px;}
-.card-title{font-size:.64rem;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;font-family:var(--font-m);display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;}
-
-/* ── FORM ── */
-.add-form{padding:18px 20px;display:grid;grid-template-columns:2fr 1.1fr 1.1fr 1.3fr auto;gap:12px;margin-bottom:18px;align-items:end;}
-.field label{display:block;margin-bottom:6px;font-size:.63rem;color:var(--muted);font-family:var(--font-m);text-transform:uppercase;letter-spacing:.12em;}
-.field input,.field select{width:100%;background:#080b18;border:1px solid rgba(255,255,255,.07);color:var(--text);padding:10px 13px;border-radius:11px;outline:none;font-family:var(--font-m);font-size:.82rem;transition:.2s;}
-.field input:focus,.field select:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(91,141,248,.12);}
-.field select option{background:#080b18;}
-.btn-add{background:var(--green);color:#040900;border:none;cursor:pointer;border-radius:11px;padding:10px 20px;font-weight:700;font-size:.83rem;font-family:var(--font-h);letter-spacing:.02em;transition:.2s;white-space:nowrap;}
-.btn-add:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(180,255,94,.22);}
-
-/* ── METRICS ── */
-.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:18px;}
-.metric{padding:20px 22px;border-radius:20px;position:relative;overflow:hidden;}
-.metric::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px;}
-.m-green::after{background:var(--green);}
-.m-blue::after{background:var(--blue);}
-.m-orange::after{background:var(--orange);}
-.m-red::after{background:var(--red);}
-.m-purple::after{background:var(--purple);}
-.m-label{color:var(--muted);font-size:.63rem;text-transform:uppercase;letter-spacing:.12em;font-family:var(--font-m);}
-.m-value{margin-top:10px;font-size:1.9rem;font-weight:700;letter-spacing:-.04em;font-family:var(--font-h);}
-.m-sub{margin-top:6px;font-size:.76rem;display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.m-name{color:var(--muted2);}
-.badge-chg{font-size:.62rem;font-family:var(--font-m);padding:2px 6px;border-radius:5px;font-weight:600;}
-.badge-chg.up{background:rgba(180,255,94,.14);color:var(--green);}
-.badge-chg.down{background:rgba(255,77,109,.14);color:var(--red);}
-.badge-chg.flat{background:rgba(255,255,255,.06);color:var(--muted2);}
-
-/* ── MAIN GRID ── */
-.grid-main{display:grid;grid-template-columns:360px 1fr;gap:18px;margin-bottom:18px;}
-
-/* ── DONUT ── */
-#donutWrap{position:relative;width:200px;height:200px;margin:0 auto;}
-#donutCanvas{width:100%;height:100%;}
-.donut-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;pointer-events:none;}
-.donut-score{font-size:2.4rem;font-weight:800;letter-spacing:-.05em;color:var(--green);font-family:var(--font-h);}
-.donut-sub{font-size:.58rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-family:var(--font-m);margin-top:3px;}
-
-/* ── GAUGE ── */
-.gauge-wrap{margin-top:20px;display:flex;flex-direction:column;align-items:center;}
-.gauge-inner{position:relative;width:150px;height:82px;margin:0 auto;}
-#gaugeCanvas{width:100%;height:100%;}
-.gauge-val{text-align:center;margin-top:3px;font-size:1.2rem;font-weight:700;font-family:var(--font-h);}
-.gauge-labels{display:flex;justify-content:space-between;width:150px;margin:0 auto;font-size:.58rem;color:var(--muted);font-family:var(--font-m);}
-
-/* ── LEGEND ── */
-.legend{margin-top:18px;display:flex;flex-direction:column;gap:9px;}
-.legend-item{display:flex;align-items:center;gap:8px;font-size:.8rem;}
-.ldot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
-.lname{flex:1;color:var(--muted2);font-family:var(--font-b);}
-.lpct{font-family:var(--font-m);font-weight:500;}
-
-/* ── TABLE ── */
-.tbl-wrap{overflow-x:auto;}
-table.tbl{width:100%;border-collapse:collapse;}
-table.tbl th{color:var(--muted);font-size:.62rem;text-transform:uppercase;letter-spacing:.1em;padding-bottom:12px;font-family:var(--font-m);text-align:left;white-space:nowrap;}
-table.tbl td{padding:11px 0;border-top:1px solid rgba(255,255,255,.04);}
-.aname{font-weight:600;font-size:.88rem;font-family:var(--font-h);}
-.atag{display:inline-block;font-size:.56rem;padding:2px 7px;border-radius:999px;font-family:var(--font-m);margin-top:4px;}
-.inline-val{background:#070a16;border:1px solid rgba(255,255,255,.07);color:var(--text);padding:6px 9px;border-radius:8px;font-family:var(--font-m);width:105px;outline:none;font-size:.8rem;}
-.inline-val:focus{border-color:var(--green);}
-.pct-col{font-family:var(--font-m);font-weight:600;font-size:.85rem;}
-.bar{height:5px;border-radius:999px;background:rgba(255,255,255,.06);overflow:hidden;width:110px;}
-.bar-fill{height:100%;border-radius:999px;transition:width .5s ease;}
-.del-btn{width:28px;height:28px;border-radius:8px;background:transparent;border:1px solid rgba(255,255,255,.07);color:var(--muted);cursor:pointer;transition:.2s;font-size:.78rem;}
-.del-btn:hover{color:var(--red);border-color:var(--red);}
-.clone-btn{font-size:.65rem;padding:5px 11px;border-radius:7px;cursor:pointer;background:var(--blue-d);border:1px solid rgba(91,141,248,.28);color:var(--blue);font-family:var(--font-m);transition:.2s;}
-.clone-btn:hover{background:var(--blue);color:#03080f;}
-
-/* ── SECTOR BARS ── */
-.sb-row{display:grid;grid-template-columns:100px 1fr 55px;gap:9px;align-items:center;margin-bottom:9px;}
-.sb-label{font-size:.72rem;color:var(--muted2);font-family:var(--font-m);overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
-.sb-bar{height:7px;border-radius:999px;background:rgba(255,255,255,.05);overflow:hidden;}
-.sb-fill{height:100%;border-radius:999px;transition:width .7s cubic-bezier(.4,0,.2,1);}
-.sb-pct{font-size:.7rem;font-family:var(--font-m);text-align:right;color:var(--muted2);}
-
-/* ── LINE CHART ── */
-.chart-card{padding:22px;margin-bottom:18px;}
-.chart-wrap{position:relative;width:100%;height:290px;margin-top:12px;}
-#lineCanvas{width:100%;height:100%;}
-.chart-tooltip{position:absolute;pointer-events:none;background:rgba(6,8,18,.96);border:1px solid var(--border2);border-radius:10px;padding:10px 13px;font-family:var(--font-m);font-size:.7rem;line-height:1.75;backdrop-filter:blur(8px);transition:opacity .15s;opacity:0;z-index:10;white-space:nowrap;}
-.chart-legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;}
-.cli{display:flex;align-items:center;gap:5px;font-size:.67rem;color:var(--muted2);font-family:var(--font-m);}
-.cli-line{width:16px;height:2px;border-radius:1px;}
-
-/* ── SECTION ROW ── */
-.section-row{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:18px;}
-
-/* ── REC ── */
-.rec-card{padding:18px 22px;display:flex;gap:14px;align-items:flex-start;margin-bottom:18px;}
-.rec-icon{font-size:1.5rem;flex-shrink:0;margin-top:2px;}
-.rec-body{line-height:1.8;color:#c4cceb;font-size:.86rem;font-family:var(--font-b);}
-.rec-body strong{color:var(--green);}
-
-/* ── FOOTER ── */
-footer{
-  border-top:1px solid var(--border);
-  margin-top:0;
-  padding:28px 20px 32px;
-  display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;
-}
-.footer-faith{
-  font-family:var(--font-h);font-size:1.1rem;font-weight:700;letter-spacing:.01em;
-  color:rgba(180,255,94,.85);
-  display:flex;align-items:center;gap:8px;
-}
-.footer-faith span{font-size:1.3rem;}
-.footer-links{display:flex;gap:10px;flex-wrap:wrap;}
-.footer-brand{font-size:.65rem;color:var(--muted);font-family:var(--font-m);letter-spacing:.12em;text-transform:uppercase;}
-
-/* ── MODAL ── */
-.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:200;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);}
-.modal{background:#0a0e1c;border:1px solid var(--border2);border-radius:18px;padding:26px;width:320px;}
-.modal h3{font-family:var(--font-h);font-size:1.05rem;margin-bottom:14px;}
-.modal input{width:100%;background:#070a16;border:1px solid rgba(255,255,255,.1);color:var(--text);padding:10px 13px;border-radius:10px;outline:none;font-family:var(--font-m);margin-bottom:13px;}
-.modal input:focus{border-color:var(--green);}
-.modal-btns{display:flex;gap:9px;justify-content:flex-end;}
-.border-radius:9px;cursor:pointer;font-size:.8rem;font-family:var(--font-b);}
-.btn-cancel{background:transparent;border:1px solid var(--border2);color:var(--muted2);padding:8px 16px;border-radius:9px;cursor:pointer;font-size:.8rem;font-family:var(--font-b);}
-.btn-confirm{background:var(--green);border:none;color:#040900;padding:8px 16px;border-radius:9px;cursor:pointer;font-weight:700;font-size:.8rem;font-family:var(--font-h);}
-
-/* ── EMPTY ── */
-.empty{padding:42px;text-align:center;color:var(--muted);font-size:.85rem;}
-
-/* ── RESPONSIVE ── */
-@media(max-width:1100px){.grid-main{grid-template-columns:1fr;}.section-row{grid-template-columns:1fr;}.metrics{grid-template-columns:repeat(3,1fr);}}
-@media(max-width:780px){.metrics{grid-template-columns:1fr 1fr;}.add-form{grid-template-columns:1fr;}}
-@media(max-width:500px){.metrics{grid-template-columns:1fr;}.m-value{font-size:1.6rem;}}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Zen · Lluvia Azul Japonesa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #030611; /* Fondo azul noche ultra oscuro */
+            font-family: 'Courier New', monospace;
+        }
+        canvas {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        /* Controles de interfaz minimalista */
+        #ui-container {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            pointer-events: none;
+        }
+        .btn-audio {
+            padding: 14px 28px;
+            background: rgba(12, 22, 44, 0.65);
+            border: 1px solid rgba(0, 140, 255, 0.25);
+            border-radius: 30px;
+            color: #8dafff;
+            font-size: 13px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            cursor: pointer;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        .btn-audio:hover {
+            background: rgba(0, 110, 255, 0.15);
+            border-color: rgba(0, 170, 255, 0.5);
+            color: #ffffff;
+            box-shadow: 0 0 25px rgba(0, 140, 255, 0.3);
+        }
+        .instruction {
+            color: rgba(141, 175, 255, 0.35);
+            font-size: 10px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+    </style>
 </head>
 <body>
-<div id="toastArea"></div>
-<div id="modalContainer"></div>
-<div class="container">
 
-<header>
-  <div class="title">
-    <div class="title-top">
-      <div>
-        <h1>Portfolio<span>Intelligence</span></h1>
-        <div class="title-faith">✝&nbsp; Dios es mi socio</div>
-      </div>
-      <div class="alpha-badge">Alpha Analyst</div>
+    <canvas id="matrixCanvas"></canvas>
+
+    <div id="ui-container">
+        <button class="btn-audio" id="audioBtn">Activar Sonido de Naturaleza</button>
+        <div class="instruction">Lluvia digital en cámara lenta</div>
     </div>
-  </div>
-  <div class="header-right">
-    <div class="social-row">
-      <a id="mainWaLink" href="#" target="_blank" class="social-btn wa" title="WhatsApp">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-        WhatsApp
-      </a>
-      <a href="https://www.tiktok.com/@alphaanalyst3?_r=1&_t=ZS-96FnJNET42k" target="_blank" class="social-btn tt" title="TikTok @alphaanalyst3">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.5a8.28 8.28 0 004.85 1.56V6.59a4.85 4.85 0 01-1.08-.1z"/></svg>
-        @alphaanalyst3
-      </a>
-      <button class="icon-btn" title="Exportar JSON" onclick="exportJSON()">⬇</button>
-      <label class="icon-btn" title="Importar JSON" style="cursor:pointer">⬆<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"/></label>
-    </div>
-    <div class="month-tabs" id="monthTabs"></div>
-  </div>
-</header>
 
-<div class="panel add-form">
-  <div class="field"><label>Activo</label><input id="fName" placeholder="GBM, Binance, KLAR, OXY…" autocomplete="off"/></div>
-  <div class="field"><label>Categoría</label>
-    <select id="fCat">
-      <option>Liquidez</option><option>Acciones y MP</option><option>Tecnología</option>
-      <option>Bonos/Cetes</option><option>Algorítmico</option><option>Efectivo</option>
-      <option>Examen</option><option>Oro y Metales</option><option>Otro</option>
-    </select>
-  </div>
-  <div class="field"><label>Valor ($MXN)</label><input id="fVal" type="number" placeholder="5000"/></div>
-  <div class="field"><label>Nota / Tesis</label><input id="fNote" placeholder="Target, tesis de inversión…"/></div>
-  <button class="btn-add" onclick="addAsset()">+ Agregar</button>
-</div>
+    <script>
+        // ─── CONFIGURACIÓN DEL CANVAS (LLUVIA DIGITAL AZUL) ────────────────────────
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
 
-<div class="metrics">
-  <div class="panel metric m-green">
-    <div class="m-label">Portfolio Total</div>
-    <div class="m-value" id="mTotal">$0</div>
-    <div class="m-sub"><span class="m-name" id="mAssets">0 activos</span><span class="badge-chg flat" id="mTotalChg">—</span></div>
-  </div>
-  <div class="panel metric m-blue">
-    <div class="m-label">Diversificación</div>
-    <div class="m-value" id="mDiv">0%</div>
-    <div class="m-sub"><span class="m-name">score</span><span class="badge-chg flat" id="mDivChg">—</span></div>
-  </div>
-  <div class="panel metric m-orange">
-    <div class="m-label">Mayor posición</div>
-    <div class="m-value" id="mTop">—</div>
-    <div class="m-sub"><span class="m-name" id="mTopName">—</span><span class="badge-chg flat" id="mTopChg">—</span></div>
-  </div>
-  <div class="panel metric m-red">
-    <div class="m-label">HHI Concentración</div>
-    <div class="m-value" id="mHHI">0</div>
-    <div class="m-sub"><span class="m-name" id="mHHILabel">—</span><span class="badge-chg flat" id="mHHIChg">—</span></div>
-  </div>
-  <div class="panel metric m-purple">
-    <div class="m-label">Desde el pico</div>
-    <div class="m-value" id="mPeak">—</div>
-    <div class="m-sub"><span class="m-name" id="mPeakSub">Pico: —</span></div>
-  </div>
-</div>
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
 
-<div class="grid-main">
-  <div class="panel card" style="display:flex;flex-direction:column;">
-    <div class="card-title"><span>Distribución del mes</span></div>
-    <div id="donutWrap"><canvas id="donutCanvas" width="200" height="200"></canvas>
-      <div class="donut-center"><div class="donut-score" id="donutScore">0%</div><div class="donut-sub">month health</div></div>
-    </div>
-    <div class="legend" id="legend"></div>
-    <div class="gauge-wrap">
-      <div class="card-title" style="width:100%;margin-top:20px;"><span>Riesgo HHI</span></div>
-      <div class="gauge-inner"><canvas id="gaugeCanvas" width="150" height="82"></canvas></div>
-      <div class="gauge-val" id="gaugeVal">—</div>
-      <div class="gauge-labels"><span>Diversificado</span><span>Concentrado</span></div>
-    </div>
-  </div>
-  <div class="panel card">
-    <div class="card-title">
-      <span>Holdings — <span id="activeMonthLabel" style="color:var(--green)"></span></span>
-      <button class="clone-btn" onclick="clonePrev()">📋 Clonar mes anterior</button>
-    </div>
-    <div id="tableWrap"></div>
-  </div>
-</div>
+        // Caracteres Japoneses (Katakana y Kanji asociados con la calma y elementos naturales)
+        const japaneseChars = '🌸🌊🌌🎋🪷明静和穏空海風光水美夜生流禅息融庵寂';
+        const alphabet = japaneseChars.split('');
 
-<div class="section-row">
-  <div class="panel card">
-    <div class="card-title">Exposición por sector</div>
-    <div id="sectorBars"></div>
-  </div>
-  <div class="panel card">
-    <div class="card-title">Notas del mes</div>
-    <div id="notesWrap" style="display:flex;flex-direction:column;gap:9px;"></div>
-  </div>
-</div>
+        const fontSize = 18;
+        let columns = canvas.width / fontSize;
+        let rainDrops = [];
 
-<div class="panel chart-card">
-  <div class="card-title">Evolución histórica del portafolio (Jun 2025 – Abr 2026)</div>
-  <div class="chart-wrap">
-    <canvas id="lineCanvas"></canvas>
-    <div class="chart-tooltip" id="chartTooltip"></div>
-  </div>
-  <div class="chart-legend" id="chartLegend"></div>
-</div>
+        function initRain() {
+            columns = canvas.width / fontSize;
+            rainDrops = [];
+            for (let x = 0; x < columns; x++) {
+                // Posiciones de inicio escalonadas verticalmente para evitar un inicio en bloque uniforme
+                rainDrops[x] = Math.random() * -canvas.height / fontSize;
+            }
+        }
+        initRain();
+        window.addEventListener('resize', initRain);
 
-<div class="panel rec-card">
-  <div class="rec-icon" id="recIcon">📊</div>
-  <div class="rec-body" id="recText">Cargando análisis…</div>
-</div>
+        // Gradiente de tonos azules pausados
+        const bluePalette = [
+            '#00f0ff', // Cian luminoso (efecto destello en la punta de la gota)
+            '#3a86ff', // Azul claro relajante
+            '#0055ff', // Azul medio
+            '#0033aa', // Azul cobalto apagado
+            '#0a1944'  // Azul de rastro profundo
+        ];
 
-</div><footer>
-  <div class="footer-faith"><span>✝</span> Dios es mi socio</div>
-  <div class="footer-links">
-    <a id="footerWaLink" href="#" target="_blank" class="social-btn wa" style="font-size:.7rem;padding:7px 12px;">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-      Escríbeme
-    </a>
-    <a href="https://www.tiktok.com/@alphaanalyst3?_r=1&_t=ZS-96FnJNET42k" target="_blank" class="social-btn tt" style="font-size:.7rem;padding:7px 12px;">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-2.88 2.5 2.89 2.89 0 01-2.89-2.89 2.89 2.89 0 012.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 00-.79-.05 6.34 6.34 0 00-6.34 6.34 6.34 6.34 0 006.34 6.34 6.34 6.34 0 006.33-6.34V8.5a8.28 8.28 0 004.85 1.56V6.59a4.85 4.85 0 01-1.08-.1z"/></svg>
-      @alphaanalyst3
-    </a>
-  </div>
-  <div class="footer-brand">Alpha Analyst · Portfolio Intelligence Pro · 2026</div>
-</footer>
+        // Temporizador estricto para ralentizar la animación (Efecto Slow Motion)
+        let lastTime = 0;
+        const targetFps = 10; // Velocidad muy baja para inducir calma
+        const interval = 1000 / targetFps;
 
-<script>
-// ── CONFIG ─────────────────────────────────────────────
-const WHATSAPP_NUMBER = "523320352200"; 
-document.getElementById("mainWaLink").href = `https://wa.me/${WHATSAPP_NUMBER}`;
-document.getElementById("footerWaLink").href = `https://wa.me/${WHATSAPP_NUMBER}`;
+        function draw(timestamp) {
+            requestAnimationFrame(draw);
 
-const CAT_COLORS = {
-  "Liquidez":     "#4dd0e1",
-  "Acciones y MP":"#5b8df8",
-  "Tecnología":   "#f5a623",
-  "Bonos/Cetes":  "#b4ff5e",
-  "Algorítmico":  "#3dd9c5",
-  "Efectivo":     "#7a8299",
-  "Examen":       "#9d7fea",
-  "Oro y Metales":"#ffd166",
-  "Otro":         "#8891aa"
-};
+            // Filtro de fotogramas por segundo controlado
+            const delta = timestamp - lastTime;
+            if (delta < interval) return;
+            lastTime = timestamp - (delta % interval);
 
-const DEFAULT_MONTHS = [
-  "Jun 2025","Jul 2025","Ago 2025","Sep 2025",
-  "Oct 2025","Nov 2025","Dic 2025","Ene 2026",
-  "Mar 2026","Abr 2026"
-];
+            // Fondo translúcido persistente para generar estelas largas y sutiles
+            ctx.fillStyle = 'rgba(3, 6, 17, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-// ── PEAK HISTÓRICO ─────────────────────────────────────
-const HIST_PEAK = {value: 58141.96, month: "Nov 2025"};
+            ctx.font = fontSize + 'px monospace';
 
-// ── SEED DATA (importado de Portafolio_Pro.xlsx) ────────
-const SEED = {
-  "Jun 2025":[
-    {id:1,  name:"BBVA",        category:"Liquidez",     value:2242.55, note:""},
-    {id:2,  name:"Udibonos",    category:"Bonos/Cetes",  value:2500,    note:""},
-    {id:3,  name:"KLAR",        category:"Liquidez",     value:11918.38,note:""},
-    {id:4,  name:"Bitso",       category:"Tecnología",   value:9905.45, note:""},
-    {id:5,  name:"Binance",     category:"Tecnología",   value:3843.75, note:""},
-    {id:6,  name:"Kukoin",      category:"Tecnología",   value:562.50,  note:""},
-    {id:7,  name:"Pepperstone", category:"Algorítmico",  value:403.88,  note:""},
-    {id:8,  name:"GBM",         category:"Acciones y MP",value:22708.97,note:""}
-  ],
-  "Jul 2025":[
-    {id:10, name:"BBVA",        category:"Liquidez",     value:428,     note:""},
-    {id:11, name:"Udibonos",    category:"Bonos/Cetes",  value:2500,    note:""},
-    {id:12, name:"KLAR",        category:"Liquidez",     value:9108,    note:""},
-    {id:13, name:"Bitso",       category:"Tecnología",   value:10399,   note:""},
-    {id:14, name:"Binance",     category:"Tecnología",   value:4575,    note:""},
-    {id:15, name:"Kukoin",      category:"Tecnología",   value:786.66,  note:""},
-    {id:16, name:"Pepperstone", category:"Algorítmico",  value:499.88,  note:"-$38 drawdown"},
-    {id:17, name:"GBM",         category:"Acciones y MP",value:23088.97,note:""}
-  ],
-  "Ago 2025":[
-    {id:20, name:"KLAR",        category:"Liquidez",     value:11918.38,note:""},
-    {id:21, name:"Bitso",       category:"Tecnología",   value:9905.45, note:""},
-    {id:22, name:"Binance",     category:"Tecnología",   value:3843.75, note:""},
-    {id:23, name:"Pepperstone", category:"Algorítmico",  value:5716.38, note:"Recuperación fuerte"},
-    {id:24, name:"GBM",         category:"Acciones y MP",value:22708.97,note:""}
-  ],
-  "Sep 2025":[
-    {id:30, name:"BBVA",        category:"Liquidez",     value:200,     note:""},
-    {id:31, name:"Udibonos",    category:"Bonos/Cetes",  value:2543,    note:""},
-    {id:32, name:"KLAR",        category:"Liquidez",     value:8575.20, note:""},
-    {id:33, name:"Bitso",       category:"Tecnología",   value:11302,   note:""},
-    {id:34, name:"Binance",     category:"Tecnología",   value:4383.84, note:""},
-    {id:35, name:"Kukoin",      category:"Tecnología",   value:719.52,  note:""},
-    {id:36, name:"Pepperstone", category:"Algorítmico",  value:145.84,  note:"-$38 drawdown"},
-    {id:37, name:"GBM",         category:"Acciones y MP",value:23736.21,note:""}
-  ],
-  "Oct 2025":[
-    {id:40, name:"BBVA+Dineria",category:"Liquidez",     value:397.50,  note:""},
-    {id:41, name:"FTMO",        category:"Examen",       value:6000,    note:"Challenge activo"},
-    {id:42, name:"KLAR",        category:"Liquidez",     value:7915,    note:""},
-    {id:43, name:"Bitso",       category:"Tecnología",   value:7644,    note:""},
-    {id:44, name:"Binance",     category:"Tecnología",   value:3307,    note:""},
-    {id:45, name:"Kukoin",      category:"Tecnología",   value:508.75,  note:""},
-    {id:46, name:"USDT Bots",   category:"Algorítmico",  value:4405.33, note:""},
-    {id:47, name:"GBM",         category:"Acciones y MP",value:22157.55,note:""},
-    {id:48, name:"Efectivo",    category:"Efectivo",     value:3500,    note:""},
-    {id:49, name:"Oro/Plata",   category:"Oro y Metales",value:4369,    note:""}
-  ],
-  "Nov 2025":[
-    {id:50, name:"BBVA+Dineria",category:"Liquidez",     value:1388.52, note:""},
-    {id:51, name:"FTMO",        category:"Examen",       value:6000,    note:"+$18.37 P&L"},
-    {id:52, name:"KLAR",        category:"Liquidez",     value:10757.05,note:""},
-    {id:53, name:"Bots Trading",category:"Algorítmico",  value:4739.46, note:"Máximo histórico bots"},
-    {id:54, name:"Bitso",       category:"Tecnología",   value:4217.42, note:""},
-    {id:55, name:"Binance",     category:"Tecnología",   value:1946.72, note:""},
-    {id:56, name:"Kukoin",      category:"Tecnología",   value:367.40,  note:""},
-    {id:57, name:"GBM",         category:"Acciones y MP",value:25182.34,note:""},
-    {id:58, name:"Efectivo",    category:"Efectivo",     value:3000,    note:""},
-    {id:59, name:"Oro/Plata",   category:"Oro y Metales",value:4474,    note:""}
-  ],
-  "Dic 2025":[
-    {id:60, name:"Renta Fija",  category:"Bonos/Cetes",  value:11270,   note:"RF consolidada"},
-    {id:61, name:"Renta Variable",category:"Acciones y MP",value:34761.05,note:"RV consolidada"}
-  ],
-  "Ene 2026":[
-    {id:70, name:"Renta Fija",  category:"Bonos/Cetes",  value:9165,    note:"RF consolidada"},
-    {id:71, name:"Renta Variable",category:"Acciones y MP",value:32950,  note:"RV consolidada"}
-  ],
-  "Mar 2026":[
-    {id:80, name:"Renta Fija",  category:"Bonos/Cetes",  value:13331.23,note:"RF consolidada"},
-    {id:81, name:"Renta Variable",category:"Acciones y MP",value:20063.17,note:"Mínimo 2026"}
-  ],
-  "Abr 2026":[
-    {id:100,name:"BBVA+Dineria",category:"Liquidez",     value:2450,    note:""},
-    {id:101,name:"KLAR",        category:"Liquidez",     value:3909,    note:""},
-    {id:102,name:"Efectivo",    category:"Efectivo",     value:20,      note:""},
-    {id:103,name:"Bots Trading",category:"Algorítmico",  value:2814,    note:""},
-    {id:104,name:"Binance",     category:"Tecnología",   value:1186,    note:""},
-    {id:105,name:"GBM Acciones",category:"Acciones y MP",value:26318,   note:"ETFs · Fibras · Energía · Oro"},
-    {id:106,name:"Polymarket",  category:"Tecnología",   value:96.65,   note:"Prediction markets"},
-    {id:107,name:"Interactive Bro.",category:"Acciones y MP",value:200, note:"OXY · posiciones US"},
-    {id:108,name:"Otro",        category:"Otro",         value:60,      note:""}
-  ]
-};
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet[Math.floor(Math.random() * alphabet.length)];
+                
+                // Asignación de color con probabilidad para preservar el flujo orgánico
+                const rand = Math.random();
+                if (rand > 0.97) {
+                    ctx.fillStyle = '#ffffff'; // Destello blanco tenue e intermitente
+                } else if (rand > 0.75) {
+                    ctx.fillStyle = bluePalette[0]; // Cian brillante
+                } else if (rand > 0.40) {
+                    ctx.fillStyle = bluePalette[1]; // Azul claro
+                } else {
+                    ctx.fillStyle = bluePalette[2]; // Azul medio/profundo
+                }
 
-// ── PERSISTENCE ──────────────────────────────────────────
-let wallet = JSON.parse(localStorage.getItem("pip_wallet_v5") || "null");
-let months = JSON.parse(localStorage.getItem("pip_months_v5") || "null");
-if(!wallet){ wallet = SEED; }
-if(!months){ months = [...DEFAULT_MONTHS]; }
-let activeMonth = months[months.length - 1];
-function save(){ localStorage.setItem("pip_wallet_v5", JSON.stringify(wallet)); localStorage.setItem("pip_months_v5", JSON.stringify(months)); }
-function getAssets(m = activeMonth){ return wallet[m] || []; }
+                const x = i * fontSize;
+                const y = rainDrops[i] * fontSize;
 
-// ── TOAST ────────────────────────────────────────────────
-function toast(msg, type = "ok"){
-  const el = document.createElement("div");
-  el.className = `toast ${type}`; el.textContent = msg;
-  document.getElementById("toastArea").appendChild(el);
-  setTimeout(() => el.remove(), 3000);
-}
+                ctx.fillText(text, x, y);
 
-// ── FORMAT ───────────────────────────────────────────────
-function fmt(v){
-  if(v >= 1e6) return '$' + (v/1e6).toFixed(2) + 'M';
-  if(v >= 1e3) return '$' + (v/1e3).toFixed(1) + 'K';
-  return '$' + v.toFixed(0);
-}
-function changeDir(curr, prev){
-  if(!prev || prev === 0) return {cls:'flat', text:'—'};
-  const d = ((curr - prev) / prev) * 100;
-  if(Math.abs(d) < 0.05) return {cls:'flat', text:'≈ 0%'};
-  return {cls: d > 0 ? 'up':'down', text:(d >= 0 ? '+':'') + d.toFixed(1) + '%'};
-}
-function setBadge(id, chg){ const el=document.getElementById(id); el.className=`badge-chg ${chg.cls}`; el.textContent=chg.text; }
+                // Reinicio de la gota cuando sale de la pantalla con un retraso aleatorio
+                if (y > canvas.height && Math.random() > 0.98) {
+                    rainDrops[i] = 0;
+                }
+                
+                // Desplazamiento amortiguado (no todas las columnas bajan al mismo tiempo)
+                if (Math.random() > 0.35) {
+                    rainDrops[i]++;
+                }
+            }
+        }
 
-// ── MONTH TABS ───────────────────────────────────────────
-function deleteMonth(m) {
-  if(months.length <= 1){ toast("No puedes eliminar el único mes","err"); return; }
-  if(!confirm(`¿Seguro que deseas eliminar el mes "${m}" y todos sus activos?`)) return;
-  months = months.filter(x => x !== m); 
-  delete wallet[m];
-  if (activeMonth === m) {
-    activeMonth = months[months.length - 1];
-  }
-  save(); 
-  renderTabs(); 
-  render();
-  toast(`Mes "${m}" eliminado`,"info");
-}
+        requestAnimationFrame(draw);
 
-function renderTabs(){
-  const c = document.getElementById("monthTabs"); c.innerHTML = '';
-  months.forEach(m => {
-    const wrap = document.createElement("div");
-    wrap.className = "month-tab-wrapper" + (m === activeMonth ? " active" : "");
-    
-    const t = document.createElement("button");
-    t.className = "month-tab";
-    t.textContent = m;
-    t.onclick = () => { activeMonth = m; renderTabs(); render(); };
-    
-    wrap.appendChild(t);
+        // ─── AUDIO SINTÉTICO (DISEÑO DE AUDIO DE LLUVIA NATURAL) ───────────────
+        let audioCtx = null;
+        let isPlaying = false;
+        let rainSource = null;
+        const audioBtn = document.getElementById('audioBtn');
 
-    // Botón visible para borrar el mes
-    const delBtn = document.createElement("button");
-    delBtn.className = "btn-del-month";
-    delBtn.innerHTML = "✕";
-    delBtn.title = `Eliminar ${m}`;
-    delBtn.onclick = (e) => {
-      e.stopPropagation();
-      deleteMonth(m);
-    };
-    wrap.appendChild(delBtn);
-    
-    c.appendChild(wrap);
-  });
-  const add = document.createElement("button");
-  add.className = "month-tab add-m"; add.textContent = "+ Mes";
-  add.onclick = openAddMonthModal; c.appendChild(add);
-  document.getElementById("activeMonthLabel").textContent = activeMonth;
-}
+        function createRainSound() {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            
+            // Generación de un buffer de ruido rosa (más cálido y natural que el ruido blanco estándar)
+            const bufferSize = 2 * audioCtx.sampleRate;
+            const noiseBuffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = noiseBuffer.getChannelData(0);
 
-// ── MODAL ────────────────────────────────────────────────
-function openAddMonthModal(){
-  document.getElementById("modalContainer").innerHTML = `
-    <div class="modal-backdrop" onclick="if(event.target===this)this.innerHTML=''">
-      <div class="modal" onclick="event.stopPropagation()">
-        <h3>Nuevo período</h3>
-        <input id="newMonthInput" placeholder="Ej: Mayo 2026" autocomplete="off"/>
-        <div class="modal-btns">
-          <button class="btn-cancel" onclick="document.getElementById('modalContainer').innerHTML=''">Cancelar</button>
-          <button class="btn-confirm" onclick="confirmAddMonth()">Agregar</button>
-        </div>
-      </div>
-    </div>`;
-  setTimeout(() => document.getElementById("newMonthInput").focus(), 50);
-}
-function confirmAddMonth(){
-  const v = document.getElementById("newMonthInput").value.trim();
-  if(!v){ toast("Escribe un nombre","err"); return; }
-  if(months.includes(v)){ toast("Ese mes ya existe","err"); return; }
-  months.push(v); wallet[v] = []; activeMonth = v; save();
-  document.getElementById("modalContainer").innerHTML = '';
-  renderTabs(); render(); toast(`Mes "${v}" creado`,"ok");
-}
+            let b0, b1, b2, b3, b4, b5, b6;
+            b0 = b1 = b2 = b3 = b4 = b5 = b6 = 0.0;
+            
+            for (let i = 0; i < bufferSize; i++) {
+                const white = Math.random() * 2 - 1;
+                b0 = 0.99886 * b0 + white * 0.0555179;
+                b1 = 0.99332 * b1 + white * 0.0750759;
+                b2 = 0.96900 * b2 + white * 0.1538520;
+                b3 = 0.86650 * b3 + white * 0.3104856;
+                b4 = 0.55000 * b4 + white * 0.5329522;
+                b5 = -0.7616 * b5 - white * 0.0168980;
+                output[i] = b0 + b1 + b2 + b3 + b4 + b5 + b6 + white * 0.5362;
+                output[i] *= 0.12; // Normalización de volumen de salida
+                b6 = white * 0.115926;
+            }
 
-// ── ADD / REMOVE ASSET ───────────────────────────────────
-function addAsset(){
-  const name = document.getElementById("fName").value.trim().toUpperCase();
-  const cat  = document.getElementById("fCat").value;
-  const val  = parseFloat(document.getElementById("fVal").value);
-  const note = document.getElementById("fNote").value.trim();
-  if(!name || !val || val <= 0){ toast("Nombre y valor requeridos","err"); return; }
-  if(!wallet[activeMonth]) wallet[activeMonth] = [];
-  wallet[activeMonth].push({id: Date.now() + Math.random(), name, category: cat, value: val, note});
-  save();
-  document.getElementById("fName").value = ''; document.getElementById("fVal").value = '';
-  document.getElementById("fNote").value = ''; document.getElementById("fName").focus();
-  toast(`${name} agregado a ${activeMonth}`,"ok"); render();
-}
-function removeAsset(id){ wallet[activeMonth] = getAssets().filter(a => a.id !== id); save(); render(); }
-function updateVal(id, v){ const p = parseFloat(v); if(isNaN(p)||p<0) return; const a=getAssets().find(x=>x.id===id); if(a){a.value=p;save();renderCalc();} }
+            const noiseNode = audioCtx.createBufferSource();
+            noiseNode.buffer = noiseBuffer;
+            noiseNode.loop = true;
 
-// ── CLONE ────────────────────────────────────────────────
-function clonePrev(){
-  const idx = months.indexOf(activeMonth);
-  if(idx === 0){ toast("No hay mes anterior","err"); return; }
-  const src = getAssets(months[idx - 1]);
-  if(!src.length){ toast(`${months[idx-1]} está vacío`,"err"); return; }
-  wallet[activeMonth] = src.map(a => ({...a, id: Date.now() + Math.random()}));
-  save(); render(); toast(`Clonado desde ${months[idx-1]}`,"ok");
-}
+            // Filtro pasa-bajas para transformar el ruido en el sonido sordo de una llovizna cayendo
+            const lowpassFilter = audioCtx.createBiquadFilter();
+            lowpassFilter.type = 'lowpass';
+            lowpassFilter.frequency.setValueAtTime(1000, audioCtx.currentTime); // Frecuencia de corte baja para suavidad
 
-// ── EXPORT / IMPORT ──────────────────────────────────────
-function exportJSON(){
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([JSON.stringify({months,wallet},null,2)],{type:"application/json"}));
-  a.download = `portfolio_${activeMonth.replace(' ','_')}.json`; a.click();
-  toast("Exportado","ok");
-}
-function importJSON(e){
-  const f = e.target.files[0]; if(!f) return;
-  const r = new FileReader();
-  r.onload = ev => {
-    try{ const d=JSON.parse(ev.target.result); if(!d.months||!d.wallet) throw 0;
-      months=d.months; wallet=d.wallet; activeMonth=months[months.length-1];
-      save(); renderTabs(); render(); toast("Portafolio importado","ok");
-    }catch{ toast("JSON inválido","err"); }
-  };
-  r.readAsText(f); e.target.value='';
-}
+            // Control de ganancia (Volumen tenue e inmersivo)
+            const gainNode = audioCtx.createGain();
+            gainNode.gain.setValueAtTime(0.12, audioCtx.currentTime);
 
-// ── MAIN RENDER ──────────────────────────────────────────
-function render(){ renderTabs(); buildTable(); renderCalc(); }
+            // Conexión del grafo de audio
+            noiseNode.connect(lowpassFilter);
+            lowpassFilter.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
 
-function buildTable(){
-  const w = document.getElementById("tableWrap");
-  const list = getAssets();
-  if(!list.length){
-    w.innerHTML = `<div class="empty">Sin posiciones en ${activeMonth}.<br/>Agrega activos o usa "Clonar mes anterior".</div>`;
-    return;
-  }
-  w.innerHTML = `<div class="tbl-wrap"><table class="tbl">
-    <thead><tr><th>Activo</th><th>Valor ($MXN)</th><th>Peso</th><th>Barra</th><th></th></tr></thead>
-    <tbody>${list.map(a=>`<tr>
-      <td><div class="aname">${a.name}</div>
-          <div class="atag" style="background:${CAT_COLORS[a.category]||'#888'}18;color:${CAT_COLORS[a.category]||'#888'}">${a.category}</div></td>
-      <td><input class="inline-val" type="number" value="${a.value}" oninput="updateVal(${a.id},this.value)"/></td>
-      <td class="pct-col" id="pct-${a.id}" style="color:${CAT_COLORS[a.category]||'#888'}">0%</td>
-      <td><div class="bar"><div class="bar-fill" id="bar-${a.id}" style="background:${CAT_COLORS[a.category]||'#888'}"></div></div></td>
-      <td><button class="del-btn" onclick="removeAsset(${a.id})">✕</button></td>
-    </tr>`).join('')}</tbody>
-  </table></div>`;
-}
+            noiseNode.start();
+            return noiseNode;
+        }
 
-function renderCalc(){
-  const list = getAssets();
-  const total = list.reduce((s,a) => s + a.value, 0);
-  const enr = list.map(a => ({...a, pct: total > 0 ? (a.value/total)*100 : 0})).sort((a,b) => b.pct - a.pct);
-
-  enr.forEach(a => {
-    const pe = document.getElementById(`pct-${a.id}`);
-    const be = document.getElementById(`bar-${a.id}`);
-    if(pe) pe.textContent = a.pct.toFixed(1) + '%';
-    if(be) be.style.width = a.pct + '%';
-  });
-
-  const cats = {}; enr.forEach(a => cats[a.category] = (cats[a.category]||0) + a.pct);
-  const catArr = Object.entries(cats).sort((a,b) => b[1]-a[1]);
-  const hhi = enr.reduce((s,a) => s + Math.pow(a.pct/100, 2), 0);
-  const div = total > 0 ? Math.round((1-hhi)*100) : 0;
-  const hhiScore = total > 0 ? Math.round(hhi*10000) : 0;
-
-  // Previous month
-  const pidx = months.indexOf(activeMonth) - 1;
-  const prev = pidx >= 0 ? months[pidx] : null;
-  const prevList = prev ? getAssets(prev) : [];
-  const prevTotal = prevList.reduce((s,a) => s + a.value, 0);
-  const prevHHI = prevList.length ? Math.round(prevList.reduce((s,a)=>s+Math.pow((a.value/prevTotal),2),0)*10000) : null;
-  const prevDiv = prevTotal > 0 ? Math.round((1-(prevHHI/10000))*100) : null;
-  const prevEnr = prevList.map(a=>({...a,pct:prevTotal>0?(a.value/prevTotal)*100:0})).sort((a,b)=>b.pct-a.pct);
-
-  // Metrics
-  document.getElementById("mTotal").textContent = fmt(total);
-  document.getElementById("mDiv").textContent = div + '%';
-  document.getElementById("mTop").textContent = enr[0] ? enr[0].pct.toFixed(1)+'%' : '—';
-  document.getElementById("mTopName").textContent = enr[0] ? enr[0].name : '—';
-  document.getElementById("mHHI").textContent = hhiScore || '0';
-  document.getElementById("mHHILabel").textContent = total===0?'—':hhiScore<1500?'diversificado':hhiScore<2500?'moderado':'concentrado';
-  document.getElementById("mAssets").textContent = enr.length + (enr.length===1?' activo':' activos');
-  document.getElementById("donutScore").textContent = div + '%';
-
-  // Peak metric
-  const peakDd = total > 0 ? ((total - HIST_PEAK.value) / HIST_PEAK.value)*100 : null;
-  const pmEl = document.getElementById("mPeak");
-  if(peakDd !== null){
-    pmEl.textContent = (peakDd >= 0 ? '+' : '') + peakDd.toFixed(1) + '%';
-    pmEl.style.color = peakDd >= 0 ? 'var(--green)' : 'var(--red)';
-  } else { pmEl.textContent = '—'; pmEl.style.color = ''; }
-  document.getElementById("mPeakSub").textContent = `Pico: ${fmt(HIST_PEAK.value)} (${HIST_PEAK.month})`;
-
-  // Badges
-  setBadge("mTotalChg", changeDir(total, prevTotal));
-  setBadge("mDivChg", changeDir(div, prevDiv));
-  setBadge("mTopChg", enr[0]&&prevEnr[0] ? changeDir(enr[0].pct, prevEnr[0].pct) : {cls:'flat',text:'—'});
-  setBadge("mHHIChg", prevHHI != null ? changeDir(hhiScore, prevHHI) : {cls:'flat',text:'—'});
-
-  drawDonut(catArr);
-  renderLegend(catArr);
-  drawGauge(hhi);
-  renderSectorBars(catArr);
-  renderNotes(enr);
-  drawLineChart();
-  updateRec(hhiScore, enr[0], catArr.length, total, peakDd, prev, prevTotal);
-}
-
-// ── DONUT ─────────────────────────────────────────────────
-function drawDonut(cats){
-  const c = document.getElementById("donutCanvas"), ctx = c.getContext("2d");
-  ctx.clearRect(0,0,200,200);
-  if(!cats.length){
-    ctx.beginPath(); ctx.arc(100,100,78,0,Math.PI*2);
-    ctx.strokeStyle="rgba(255,255,255,.05)"; ctx.lineWidth=20; ctx.stroke(); return;
-  }
-  let start = -Math.PI/2;
-  cats.forEach(([name,pct]) => {
-    const angle = (pct/100)*Math.PI*2;
-    // Solución al bug del colapso visual en Abril: quitamos la holgura excesiva si el arco es pequeño.
-    const gap = cats.length > 1 ? Math.min(0.035, angle * 0.1) : 0;
-    ctx.beginPath(); ctx.arc(100,100,78,start,start+angle-gap);
-    ctx.strokeStyle = CAT_COLORS[name]||'#888'; ctx.lineWidth = 20;
-    ctx.lineCap = cats.length>1 ? "round":"butt";
-    ctx.shadowBlur = 10; ctx.shadowColor = CAT_COLORS[name]||'#888';
-    ctx.stroke(); ctx.shadowBlur = 0; start += angle;
-  });
-}
-
-// ── GAUGE ─────────────────────────────────────────────────
-function drawGauge(hhi){
-  const c = document.getElementById("gaugeCanvas"), ctx = c.getContext("2d");
-  ctx.clearRect(0,0,150,82);
-  ctx.beginPath(); ctx.arc(75,76,58,Math.PI,0);
-  ctx.strokeStyle="rgba(255,255,255,.07)"; ctx.lineWidth=12; ctx.lineCap="round"; ctx.stroke();
-  const fa = Math.min(hhi,1)*Math.PI;
-  if(fa > 0){
-    const col = hhi<.15?"#b4ff5e":hhi<.25?lerpColor("#b4ff5e","#f5a623",(hhi-.15)/.1):lerpColor("#f5a623","#ff4d6d",(hhi-.25)/.25);
-    ctx.beginPath(); ctx.arc(75,76,58,Math.PI,Math.PI+fa);
-    ctx.strokeStyle=col; ctx.lineWidth=12; ctx.lineCap="round";
-    ctx.shadowBlur=8; ctx.shadowColor=col; ctx.stroke(); ctx.shadowBlur=0;
-    const hhiScore = Math.round(hhi*10000);
-    const gv = document.getElementById("gaugeVal");
-    gv.textContent = hhiScore||'0';
-    gv.style.color = hhi<.15?"#b4ff5e":hhi<.25?"#f5a623":"#ff4d6d";
-  } else {
-    document.getElementById("gaugeVal").textContent='0';
-    document.getElementById("gaugeVal").style.color='';
-  }
-}
-function lerpColor(a,b,t){
-  const p=h=>[parseInt(h.slice(1,3),16),parseInt(h.slice(3,5),16),parseInt(h.slice(5,7),16)];
-  const [r1,g1,b1]=p(a);const [r2,g2,b2]=p(b);
-  return `rgb(${Math.round(r1+(r2-r1)*t)},${Math.round(g1+(g2-g1)*t)},${Math.round(b1+(b2-b1)*t)})`;
-}
-
-// ── LEGEND ────────────────────────────────────────────────
-function renderLegend(cats){
-  document.getElementById("legend").innerHTML = cats.map(([n,p]) => `
-    <div class="legend-item">
-      <div class="ldot" style="background:${CAT_COLORS[n]||'#888'}"></div>
-      <div class="lname">${n}</div>
-      <div class="lpct" style="color:${CAT_COLORS[n]||'#888'}">${p.toFixed(1)}%</div>
-    </div>`).join('');
-}
-
-// ── SECTOR BARS ───────────────────────────────────────────
-function renderSectorBars(catArr){
-  const top = catArr[0] ? catArr[0][1] : 100;
-  document.getElementById("sectorBars").innerHTML = catArr.length
-    ? catArr.map(([n,p]) => `<div class="sb-row">
-        <div class="sb-label">${n}</div>
-        <div class="sb-bar"><div class="sb-fill" style="width:${(p/top)*100}%;background:${CAT_COLORS[n]||'#888'}"></div></div>
-        <div class="sb-pct">${p.toFixed(1)}%</div>
-      </div>`).join('')
-    : `<div class="empty" style="padding:16px">Sin datos</div>`;
-}
-
-// ── NOTES ─────────────────────────────────────────────────
-function renderNotes(enr){
-  const wn = enr.filter(a => a.note);
-  document.getElementById("notesWrap").innerHTML = wn.length
-    ? wn.map(a => `<div style="border-left:2px solid ${CAT_COLORS[a.category]||'#888'};padding:7px 12px;border-radius:0 8px 8px 0;background:${CAT_COLORS[a.category]||'#888'}0d">
-        <div style="font-size:.72rem;font-weight:600;color:${CAT_COLORS[a.category]||'#888'};font-family:var(--font-m)">${a.name}</div>
-        <div style="font-size:.8rem;color:var(--muted2);margin-top:2px">${a.note}</div>
-      </div>`).join('')
-    : `<div class="empty" style="padding:16px">Agrega notas a tus activos para verlas aquí.</div>`;
-}
-
-// ── LINE CHART ────────────────────────────────────────────
-function drawLineChart(){
-  const c = document.getElementById("lineCanvas"); if(!c) return;
-  const wrap = c.parentNode; const rect = wrap.getBoundingClientRect();
-  const dpr = window.devicePixelRatio || 1;
-  c.width = rect.width * dpr; c.height = 290 * dpr;
-  c.style.width = rect.width + 'px'; c.style.height = '290px';
-  const ctx = c.getContext("2d"); ctx.scale(dpr, dpr);
-  const cW = rect.width, cH = 290;
-  ctx.clearRect(0,0,cW,cH);
-
-  const pX=62,pY=28,pR=16,pB=34;
-  const gW=cW-pX-pR, gH=cH-pY-pB;
-
-  // build data
-  let histData = {}; let globalMax = 1000;
-  months.forEach(m => {
-    histData[m] = {Total:0};
-    Object.keys(CAT_COLORS).forEach(cat => histData[m][cat]=0);
-    (wallet[m]||[]).forEach(a => {
-      histData[m][a.category]=(histData[m][a.category]||0)+a.value;
-      histData[m].Total += a.value;
-    });
-    if(histData[m].Total > globalMax) globalMax = histData[m].Total;
-  });
-  globalMax *= 1.1;
-
-  const stepX = months.length > 1 ? gW/(months.length-1) : gW/2;
-
-  // grid + Y labels
-  ctx.font=`10px "JetBrains Mono",monospace`;
-  for(let i=0;i<=4;i++){
-    const y=pY+(gH/4)*i;
-    ctx.strokeStyle="rgba(255,255,255,0.035)"; ctx.lineWidth=1;
-    ctx.beginPath(); ctx.moveTo(pX,y); ctx.lineTo(pX+gW,y); ctx.stroke();
-    ctx.fillStyle="rgba(80,88,118,0.9)";
-    ctx.fillText(fmt(globalMax-((globalMax/4)*i)), 4, y+4);
-  }
-
-  // X labels
-  months.forEach((m, i) => {
-    const x = pX + stepX * i;
-    ctx.fillStyle = m===activeMonth ? "#b4ff5e":"rgba(80,88,118,0.8)";
-    const lbl = m.replace(' 20','\''); // "Jun 2025" → "Jun '25"
-    ctx.fillText(lbl, x - (lbl.length*3), cH-8);
-    if(m===activeMonth){
-      ctx.strokeStyle="rgba(180,255,94,0.1)"; ctx.lineWidth=1;
-      ctx.beginPath(); ctx.moveTo(x,pY); ctx.lineTo(x,pY+gH); ctx.stroke();
-    }
-  });
-
-  const legendItems = [];
-  const catsToPlot = ["Total", ...Object.keys(CAT_COLORS)];
-
-  catsToPlot.forEach(cat => {
-    const hasVol = months.some(m => (histData[m][cat]||0)>0);
-    if(!hasVol) return;
-    const pts = months.map((m,i) => {
-      const v = histData[m][cat]||0;
-      return {x:pX+stepX*i, y:pY+gH-(v/globalMax)*gH, v, m};
-    });
-    const isTotal = cat==="Total";
-    const color = isTotal ? "rgba(255,255,255,.65)" : CAT_COLORS[cat];
-
-    // gradient fill
-    if(!isTotal && pts.length>1){
-      const grad = ctx.createLinearGradient(0,pY,0,pY+gH);
-      grad.addColorStop(0, color+"28"); grad.addColorStop(1, color+"00");
-      ctx.beginPath(); ctx.moveTo(pts[0].x, pY+gH);
-      pts.forEach((p,i) => {
-        if(i===0) ctx.lineTo(p.x,p.y);
-        else { const pr=pts[i-1]; ctx.bezierCurveTo((pr.x+p.x)/2,pr.y,(pr.x+p.x)/2,p.y,p.x,p.y); }
-      });
-      ctx.lineTo(pts[pts.length-1].x, pY+gH); ctx.closePath();
-      ctx.fillStyle=grad; ctx.fill();
-    }
-
-    // line
-    ctx.beginPath(); ctx.strokeStyle=color; ctx.lineWidth=isTotal?2.5:1.8;
-    if(isTotal) ctx.setLineDash([5,4]); else ctx.setLineDash([]);
-    ctx.shadowBlur=isTotal?0:5; ctx.shadowColor=color;
-    pts.forEach((p,i) => {
-      if(i===0) ctx.moveTo(p.x,p.y);
-      else { const pr=pts[i-1]; ctx.bezierCurveTo((pr.x+p.x)/2,pr.y,(pr.x+p.x)/2,p.y,p.x,p.y); }
-    });
-    ctx.stroke(); ctx.shadowBlur=0; ctx.setLineDash([]);
-
-    // active dot + value label
-    pts.forEach((p,i) => {
-      if(months[i]===activeMonth && p.v>0){
-        ctx.fillStyle=color; ctx.beginPath(); ctx.arc(p.x,p.y,4,0,Math.PI*2); ctx.fill();
-        ctx.fillStyle=color; ctx.font=`500 9px "JetBrains Mono",monospace`;
-        ctx.fillText(fmt(p.v), p.x+6, p.y-5);
-      }
-    });
-
-    legendItems.push({cat, color, isTotal});
-  });
-
-  document.getElementById("chartLegend").innerHTML = legendItems.map(({cat,color,isTotal})=>`
-    <div class="cli">
-      <div class="cli-line" style="${isTotal?`border-top:2px dashed ${color};background:transparent`:` background:${color}`}"></div>
-      <span>${cat}</span>
-    </div>`).join('');
-
-  c._histData = histData; c._stepX = stepX; c._pX = pX; c._pY = pY; c._gH = gH; c._globalMax = globalMax;
-}
-
-// Tooltip hover
-function setupTooltip(){
-  const c = document.getElementById("lineCanvas");
-  const tt = document.getElementById("chartTooltip");
-  c.addEventListener("mousemove", e => {
-    if(!c._histData) return;
-    const rect = c.getBoundingClientRect(); const mx = e.clientX - rect.left;
-    let best=0;
-    months.forEach((m,i) => {
-      const x = c._pX + c._stepX * i;
-      if(Math.abs(mx-x) < Math.abs(mx-(c._pX+c._stepX*best))) best=i;
-    });
-    const m = months[best]; const d = c._histData[m];
-    const lines = Object.entries(d).filter(([k,v])=>v>0&&k!=="Total")
-      .sort((a,b)=>b[1]-a[1])
-      .map(([k,v])=>`<span style="color:${CAT_COLORS[k]||'#888'}">${k}: ${fmt(v)}</span>`).join('<br/>');
-    tt.innerHTML=`<span style="color:#b4ff5e;font-size:.67rem">${m}</span><br/><span style="color:white">Total: ${fmt(d.Total)}</span><br/>${lines}`;
-    const tx = c._pX + c._stepX * best;
-    tt.style.left = (tx + 10) + 'px'; tt.style.top = '16px'; tt.style.opacity='1';
-  });
-  c.addEventListener("mouseleave", () => tt.style.opacity='0');
-}
-
-// ── RECOMMENDATION ────────────────────────────────────────
-function updateRec(hhiScore, top, numCats, total, peakDd, prev, prevTotal){
-  const icon = document.getElementById("recIcon"), text = document.getElementById("recText");
-  if(!total){ icon.textContent='📊'; text.innerHTML=`Portafolio vacío en <strong>${activeMonth}</strong>. Agrega activos o clona el mes anterior.`; return; }
-
-  const trend = prev&&prevTotal>0 ? ((total-prevTotal)/prevTotal*100) : null;
-  const trendStr = trend!==null ? ` Vs. ${prev}: <strong style="color:${trend>=0?'#b4ff5e':'#ff4d6d'}">${trend>=0?'+':''}${trend.toFixed(1)}%</strong>.`:'';
-  const peakStr = peakDd!==null ? ` Portfolio al <strong>${(((total/HIST_PEAK.value)*100)).toFixed(0)}%</strong> del pico histórico de ${fmt(HIST_PEAK.value)}.`:'';
-
-  if(hhiScore > 2500){
-    icon.textContent='⚠️';
-    text.innerHTML=`Concentración <strong>alta</strong> en ${activeMonth}. <strong>${top.name}</strong> representa el <strong>${top.pct.toFixed(1)}%</strong> del portafolio. Considera distribuir hacia otros sectores para reducir el riesgo idiosincrático.${trendStr}${peakStr}`;
-  } else if(hhiScore > 1500){
-    icon.textContent='📈';
-    text.innerHTML=`Diversificación <strong>moderada</strong> en ${activeMonth} con ${numCats} sectores activos. Incorporar activos defensivos (Bonos/Cetes, Efectivo) puede mejorar la resiliencia del portafolio.${trendStr}${peakStr}`;
-  } else {
-    icon.textContent='✅';
-    text.innerHTML=`Portafolio <strong>bien diversificado</strong> en ${activeMonth} con ${numCats} sectores y HHI bajo. Mantén la estructura y monitorea la evolución histórica en la gráfica inferior.${trendStr}${peakStr}`;
-  }
-}
-
-// ── KEYBOARD ──────────────────────────────────────────────
-["fName","fVal","fNote","fCat"].forEach(id => {
-  document.getElementById(id).addEventListener("keydown", e => { if(e.key==="Enter") addAsset(); });
-});
-window.addEventListener("resize", drawLineChart);
-
-// ── BOOT ─────────────────────────────────────────────────
-renderTabs();
-render();
-setupTooltip();
-</script>
+        audioBtn.addEventListener('click', () => {
+            if (!isPlaying) {
+                if (!audioCtx) {
+                    rainSource = createRainSound();
+                } else if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+                audioBtn.textContent = 'Pausar Ambiente';
+                audioBtn.style.borderColor = 'rgba(0, 200, 255, 0.6)';
+                isPlaying = true;
+            } else {
+                if (audioCtx) {
+                    audioCtx.suspend();
+                }
+                audioBtn.textContent = 'Activar Sonido de Naturaleza';
+                audioBtn.style.borderColor = 'rgba(0, 140, 255, 0.25)';
+                isPlaying = false;
+            }
+        });
+    </script>
 </body>
 </html>
